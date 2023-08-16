@@ -8,6 +8,8 @@ TagManager:
   - Door
   - MiniCamera
   - CastleDoor
+  - Scaffold
+  - broke
   layers:
   - Default
   - TransparentFX
@@ -17,10 +19,10 @@ TagManager:
   - UI
   - Gress
   - Buinding
-  - unvisible
-  - 
-  - 
-  - 
+  - Unvisible
+  - Player
+  - Mini
+  - StepGame
   - 
   - 
   - 
