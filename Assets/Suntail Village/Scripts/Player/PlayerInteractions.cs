@@ -11,7 +11,7 @@ namespace Suntail
         [Tooltip("Layer mask for interactive objects")]
         [SerializeField] private LayerMask interactionLayer;
         [Tooltip("Maximum distance from player to object of interaction")]
-        [SerializeField] private float interactionDistance = 3f;
+        [SerializeField] private float interactionDistance = 2f;
         [Tooltip("Tag for door object")]
         [SerializeField] private string doorTag = "Door";
         [Tooltip("Tag for pickable object")]

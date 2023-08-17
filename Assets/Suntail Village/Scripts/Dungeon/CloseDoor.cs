@@ -8,7 +8,7 @@ public class StageStart : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("1층 입장");
+            
 
             // 다른 객체의 Animator 컴포넌트를 확인하고 애니메이션 재생
             if (otherObjectAnimator != null)

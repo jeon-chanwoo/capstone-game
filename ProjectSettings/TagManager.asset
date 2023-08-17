@@ -10,6 +10,7 @@ TagManager:
   - CastleDoor
   - Scaffold
   - broke
+  - Monster
   layers:
   - Default
   - TransparentFX

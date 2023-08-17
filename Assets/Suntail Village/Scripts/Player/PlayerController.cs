@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -36,6 +37,7 @@ namespace Suntail
         private int attackCount = 0;
         private float attackCoolDown = 0.4f;
         private bool isAttackInputDisabled = false;
+        [SerializeField] private Weapon currentWeapon;
 
         [Header("Movement")]
         [SerializeField] public GameObject direction;//바라보는 방향
@@ -97,6 +99,9 @@ namespace Suntail
         private RaycastHit _groundHit;
         private float _nextFootstep;
 
+        private GameObject previousHitObject;
+        private int previousLayer;
+
         #endregion
         private void Awake()
         {
@@ -140,8 +145,45 @@ namespace Suntail
                 Zoom();
             GroundChecker();
             AttackReset();
-            
+           
         }
+        
+
+        private void CheckMonsterCollision()
+        {
+            Collider weaponCollider = currentWeapon.GetComponent<Collider>();
+
+            // currentWeapon의 콜라이더가 없을 경우 처리
+            if (weaponCollider == null)
+            {
+                Debug.LogWarning("Weapon collider not found.");
+                return;
+            }
+
+            // 캐릭터 전방으로 레이캐스트 발사
+            Ray ray2 = new Ray(direction.transform.position + new Vector3(0.0f, 1.0f, 0.0f), direction.transform.forward);
+            Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);
+
+            RaycastHit[] hits;
+
+            // 레이캐스트로 충돌 검사
+            hits = Physics.RaycastAll(ray2, currentWeapon.attackRange);
+
+            foreach (RaycastHit hit in hits)
+            {
+                // 무기의 콜라이더와 몬스터의 콜라이더가 닿았을 때
+                if (hit.collider.CompareTag("Monster"))
+                {
+                    Monster monster = hit.collider.GetComponent<Monster>();
+                    if (monster != null)
+                    {
+                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
+                        monster.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
+                    }
+                }
+            }
+        }
+
         private void AttackReset()
         {
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("WAIT"))
@@ -151,7 +193,7 @@ namespace Suntail
         }
         private void Attack()
         {
-            if (Input.GetMouseButton(0) && !isAttackInputDisabled)
+            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled)
             {
                 
                 if (attackCount == 0)
@@ -159,12 +201,14 @@ namespace Suntail
                     if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
                     {
                         _animator.Play("Attack1");
+                        CheckMonsterCollision();
                         attackCount++;
                         StartCoroutine(DisableInputForDuration(attackCoolDown));
                     }
                     else
                     {
                         _animator.Play("Attack1");
+                        CheckMonsterCollision();
                         attackCount++;
                         StartCoroutine(DisableInputForDuration(attackCoolDown));
                     }
@@ -178,6 +222,7 @@ namespace Suntail
                     if (Input.GetMouseButtonDown(0))
                     {
                         _animator.Play("Attack2");
+                        CheckMonsterCollision();
                         attackCount++;
                         StartCoroutine(DisableInputForDuration(attackCoolDown));
                     }
@@ -190,6 +235,7 @@ namespace Suntail
                     if (Input.GetMouseButton(0))
                     {
                         _animator.Play("Attack3");
+                        CheckMonsterCollision();
                         attackCount = 0;
                         isAttackInputDisabled = true;
                         StartCoroutine(DisableInputForDuration(attackCoolDown));
