@@ -4,13 +4,17 @@ using UnityEngine.AI;
 
 public class Monster : MonoBehaviour
 {
-    private float currentHealth;
+    public float currentHealth;
+    public float maxHealth;
     public float moveSpeed = 5.0f;
     public float transAttack = 3.0f;
+    public float healthIncreaseRate = 1.0f;
     public Transform target;
+    public float count = 0.0f;
     NavMeshAgent agent;
     public Animator anim;
- 
+    
+
 
 
     enum State
@@ -66,6 +70,7 @@ public class Monster : MonoBehaviour
         {
             UpdateDie();
         }
+        IncreaseHealth();
     }
 
     private void UpdateIdle()
@@ -123,7 +128,7 @@ public class Monster : MonoBehaviour
     private void UpdateGetHit()
     {
 
-        if (currentHealth % 10 == 0)
+        if (currentHealth % 5 == 0)
             anim.Play("Get Hit");
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
@@ -142,7 +147,9 @@ public class Monster : MonoBehaviour
 
     private void UpdateDie()
     {
-        StartCoroutine(UpdateDieWithDelay());
+        anim.Play("Die");
+        StartCoroutine(DestroyAfterDelay(5.0f));
+        OpenDoor();
     }
 
     //공격할때 2개의 공격중 1개 랜덤공격
@@ -169,19 +176,44 @@ public class Monster : MonoBehaviour
     public void SetHealth(float health)
     {
         currentHealth = health;
+        maxHealth = health;
     }
-    //죽었을때 죽은모션 후 디스트로이
-    private IEnumerator UpdateDieWithDelay()
+    public void IncreaseHealth()
     {
-        anim.Play("Die");
-        yield return new WaitForSeconds(5.0f);
-        Destroy(agent);
+        if (currentHealth < maxHealth)
+        {
+            count += healthIncreaseRate * Time.deltaTime;
+            if(count>0.8f)
+            {
+                count= 0;
+                currentHealth += healthIncreaseRate;
+                currentHealth = Mathf.Min(currentHealth, maxHealth); // 최대값 초과 방지
+            }
+                
+                
+        }
+    }
+
+    public void OpenDoor()
+    {
+        GameObject door = GameObject.Find("SM_Env_Wall_233 (6)");
+        Animator animator = door.GetComponent<Animator>();
+        if(animator != null)
+        {
+            animator.SetTrigger("open");
+        }
+    }
+
+    private IEnumerator DestroyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(agent.gameObject);
     }
     // 데미지를 입었을 때 호출되는 메서드
     public void TakeDamage(float damageAmount)
     {
         currentHealth -= damageAmount;
-        Debug.Log(currentHealth);
+        Debug.Log(currentHealth+"/"+maxHealth);
         if (currentHealth <= 0)
         {
             state = State.Die;

@@ -13,16 +13,16 @@ namespace Suntail
 
         private void Start()
         {
-            Transform hpBarTransform = GameObject.Find("Hp").transform;
+            Transform hpBarTransform = GameObject.Find("HpBar2").transform;
             _hpSlider1 = hpBarTransform.GetComponent<Slider>();
             _hpSlider1.minValue = 0;
 
-            Transform mpBarTransform = GameObject.Find("Mp").transform;
+            Transform mpBarTransform = GameObject.Find("MpBar2").transform;
             _mpSlider1 = mpBarTransform.GetComponent<Slider>();
             _mpSlider1.minValue = 0;
 
             // PlayerController 컴포넌트 할당
-            _stats1 = GetComponent<PlayerController>();
+            _stats1 = GameObject.Find("Controller").GetComponent<PlayerController>();
         }
 
         private void UpdateUI()
