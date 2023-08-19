@@ -1,3 +1,4 @@
+using Suntail;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,8 +14,7 @@ public class Monster : MonoBehaviour
     public float count = 0.0f;
     NavMeshAgent agent;
     public Animator anim;
-    
-
+    private bool isAttacking = false;
 
 
     enum State
@@ -115,6 +115,7 @@ public class Monster : MonoBehaviour
     {
         agent.speed = 0;
         float distance = Vector3.Distance(transform.position, target.transform.position);
+
         if (distance > transAttack)
         {
             state = State.Tracking;
@@ -164,15 +165,65 @@ public class Monster : MonoBehaviour
         {
             case 1:
                 anim.SetTrigger("attack1");
+                Attack1();
                 break;
             case 2:
                 anim.SetTrigger("attack2");
+                Attack2();
                 break;
             default:
                 break;
         }
     }
-    // 초기화 메서드
+    public void Attack1()
+    {
+        if(state == State.Attack && !isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Claw Attack"))
+        {
+            if(target != null)
+            {
+                PlayerController player = target.GetComponent<PlayerController>();
+                if ((player != null))
+                    if (!isAttacking)
+                    {
+                        player.TakeDamage(4.0f);
+                        isAttacking = true;
+                        StartCoroutine(ResetAttack(1.43f));
+                    }
+
+            }
+        }
+    }
+    public void Attack2()
+    {
+        if (state == State.Attack &&!isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Basic Attack"))
+        {
+            if (target != null)
+            {
+                PlayerController player = target.GetComponent<PlayerController>();
+                if (player != null)
+                {
+                    if(!isAttacking)
+                    {
+                        player.TakeDamage(2.0f);
+                        isAttacking=true;
+                        StartCoroutine(ResetAttack(1.1f));
+                    }
+                }
+            }
+        }
+    }
+
+    private IEnumerator ResetAttack(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (isAttacking)
+        {   
+
+            isAttacking= false;
+        }
+        Debug.Log("코루틴 호출됨");
+    }
+
     public void SetHealth(float health)
     {
         currentHealth = health;
@@ -225,7 +276,5 @@ public class Monster : MonoBehaviour
             state = State.GetHit;
         }
     }
-
-
 
 }

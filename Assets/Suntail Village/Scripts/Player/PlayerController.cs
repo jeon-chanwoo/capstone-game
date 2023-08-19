@@ -26,7 +26,7 @@ namespace Suntail
             public Texture2D[] groundTextures;
             public AudioClip[] footstepSounds;
         }
-
+        #region state
         [Header("Stats")]
         [SerializeField] public float _hp; //현재체력
         [SerializeField] public float _maxHP;//최대체력
@@ -48,20 +48,11 @@ namespace Suntail
         private float attackCoolDown = 0.4f;
         private bool isAttackInputDisabled = false;
         [SerializeField] private Weapon currentWeapon;
-
+        #endregion
+        #region move
         [Header("Movement")]
         [SerializeField] public GameObject direction;//바라보는 방향
-
         [SerializeField] private float gravity = -9.81f;
-
-        [Header("Mouse Look")] 
-        [SerializeField] private Camera playerCamera;
-        [SerializeField] private float mouseSensivity;
-        [SerializeField] private float mouseVerticalClamp;
-        [SerializeField] private float scrollSpeed = 2000.0f;
-        private int escKeyPressCount = 0;
-        private bool isLeftControlPressed = false;
-        
         [Header("Keybinds")]
         [SerializeField] private KeyCode jumpKey = KeyCode.Space;
         [SerializeField] private KeyCode runKey = KeyCode.LeftShift;
@@ -74,14 +65,24 @@ namespace Suntail
         [SerializeField] private float groundCheckDistance = 1.0f;
 
         [Tooltip("Footsteps playing rate")]
-        [SerializeField] [Range(1f, 2f)] private float footstepRate = 1f;
+        [SerializeField][Range(1f, 2f)] private float footstepRate = 1f;
 
         [Tooltip("Footstep rate when player running")]
-        [SerializeField] [Range(1f, 2f)] private float runningFootstepRate = 1.5f;
+        [SerializeField][Range(1f, 2f)] private float runningFootstepRate = 1.5f;
 
         [Tooltip("Add textures for this layer and add sounds to be played for this texture")]
         public List<GroundLayer> groundLayers = new List<GroundLayer>();
-
+        #endregion
+        #region camera
+        [Header("Mouse Look")] 
+        [SerializeField] private Camera playerCamera;
+        [SerializeField] private float mouseSensivity;
+        [SerializeField] private float mouseVerticalClamp;
+        [SerializeField] private float scrollSpeed = 2000.0f;
+        private int escKeyPressCount = 0;
+        private bool isLeftControlPressed = false;
+        #endregion
+        #region variables
         //Private movement variables
         private float _horizontalMovement;
         private float _verticalMovement;
@@ -111,7 +112,7 @@ namespace Suntail
 
         private GameObject previousHitObject;
         private int previousLayer;
-
+        #endregion
         #endregion
         private void Awake()
         {
@@ -135,10 +136,15 @@ namespace Suntail
 
         private void Update()
         {
+            #region Attack
             if (_characterController.isGrounded)
             {
                 Attack();
             }
+            Skill();
+            AttackReset();
+            #endregion
+            #region move
             if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) || 
                 (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
                 (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) && 
@@ -149,18 +155,16 @@ namespace Suntail
                 Jump();
                 Movement();
             }
-
-            Skill();
-
+            GroundChecker();
+            #endregion
+            #region Camera
             MouseLook();
             CheckInput();
             if (!isLeftControlPressed)
                 Zoom();
-            GroundChecker();
-            AttackReset();
-           
+            #endregion
         }
-        
+        #region attack
         private void Skill()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -205,7 +209,6 @@ namespace Suntail
             if(_skillOneButton != null )
                 _skillOneButton.enabled = false;
         }
-
         private void CheckMonsterCollision()
         {
             Collider weaponCollider = currentWeapon.GetComponent<Collider>();
@@ -240,7 +243,6 @@ namespace Suntail
                 }
             }
         }
-
         private void CheckMonsterCollision(float _skillOnePower)
         {
             Collider weaponCollider = currentWeapon.GetComponent<Collider>();
@@ -275,7 +277,6 @@ namespace Suntail
                 }
             }
         }
-
         private void AttackReset()
         {
             if (_animator.GetCurrentAnimatorStateInfo(0).IsName("WAIT"))
@@ -336,7 +337,6 @@ namespace Suntail
                 return;
             }
         }
-
         private IEnumerator DisableInputForDuration(float delay)
         {
             
@@ -345,8 +345,20 @@ namespace Suntail
             
 
         }
+        public void TakeDamage(float damageAmount) 
+        {
+            _hp -= damageAmount-_defense;
+            if(_hp <= 0)
+            {
+                _hp = 0;
+            }
+            else
+            {
 
-
+            }
+        }
+        #endregion
+        #region move
         private void Jump()
         {
             if (!_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
@@ -357,8 +369,6 @@ namespace Suntail
                 StartCoroutine(JumpCoolTime(0.8f));
             }
         }
-
-        //쿨타임계산
         private IEnumerator JumpCoolTime(float cool)
         {
             _isJumping = true; // 점프 중임을 설정
@@ -367,8 +377,45 @@ namespace Suntail
             
             _isJumping = false; // 점프 종료
         }
+        private void FixedUpdate()
+        {
+            if (_characterController.isGrounded)
+            {
+                _isJumping = false;
+                _velocity.y += gravity * Time.fixedDeltaTime;
+            }
+            else
+            {
+                if (!_isJumping)
+                {
+                    _velocity.y += (gravity + 3.0f) * Time.fixedDeltaTime;
+                }
+            }
+            _animator.SetFloat("speed", _currentSpeed / 4.0f);
+            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
+            {
+                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
 
+                if (_nextFootstep >= 100f)
+                {
+                    {
+                        PlayFootstep();
+                        _nextFootstep = 0;
+                    }
+                }
+                _nextFootstep += (currentFootstepRate * walkSpeed);
+            }
+            else
+            {
+                _animator.SetFloat("speed", 0);
+            }
 
+            if (_characterController.isGrounded && _velocity.y < 0)
+            {
+                _animator.SetBool("jump", false);
+            }
+            _characterController.Move(_velocity * Time.fixedDeltaTime);
+        }
         private void Movement()
         {
             if (_characterController.isGrounded && _velocity.y < 0)
@@ -382,25 +429,32 @@ namespace Suntail
             if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 45, 0));
-            }else if(Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+            }
+            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 135, 0));
-            }else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+            }
+            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 225, 0));
-            }else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+            }
+            else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 315, 0));
-            }else if (Input.GetKey(KeyCode.W))
+            }
+            else if (Input.GetKey(KeyCode.W))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 0, 0));
-            }else if (Input.GetKey(KeyCode.D))
+            }
+            else if (Input.GetKey(KeyCode.D))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 90, 0));
-            }else if (Input.GetKey(KeyCode.S))
+            }
+            else if (Input.GetKey(KeyCode.S))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
-            }else if (Input.GetKey(KeyCode.A))
+            }
+            else if (Input.GetKey(KeyCode.A))
             {
                 direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 270, 0));
             }
@@ -416,14 +470,31 @@ namespace Suntail
 
             _isRunning = Input.GetKey(runKey);
             _currentSpeed = walkSpeed * (_isRunning ? runMultiplier : 1f);
-            
+
             _characterController.Move(_moveDirection * _currentSpeed * Time.deltaTime);
 
             _velocity.y += gravity * Time.deltaTime;
             _characterController.Move(_velocity * Time.deltaTime);
 
         }
+        private void GroundChecker()
+        {
+            Ray checkerRay = new Ray(transform.position + (Vector3.up * 0.1f), Vector3.down);
 
+            if (Physics.Raycast(checkerRay, out _groundHit, groundCheckDistance))
+            {
+                if (_groundHit.collider.GetComponent<Terrain>())
+                {
+                    _currentTexture = _terrainLayers[GetTerrainTexture(transform.position)].diffuseTexture;
+                }
+                if (_groundHit.collider.GetComponent<Renderer>())
+                {
+                    _currentTexture = GetRendererTexture();
+                }
+            }
+        }
+        #endregion
+        #region camera
         private void MouseLook()
         {   
             _xAxis = Input.GetAxis("Mouse X"); 
@@ -475,67 +546,8 @@ namespace Suntail
                 playerCamera.transform.localPosition = new Vector3(0.0f, 8.0f, -8.0f);
             }
         }
-
-        
-        private void FixedUpdate()
-        {
-            if (_characterController.isGrounded)
-            {
-                _isJumping = false;
-                _velocity.y += gravity * Time.fixedDeltaTime;
-            }
-            else
-            {
-                if (!_isJumping)
-                {
-                    _velocity.y += (gravity+3.0f) * Time.fixedDeltaTime;
-                }
-            }
-            _animator.SetFloat("speed", _currentSpeed/4.0f);
-            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
-            {
-                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
-
-                if (_nextFootstep >= 100f)
-                {
-                    {
-                        PlayFootstep();
-                        _nextFootstep = 0;
-                    }
-                }
-                _nextFootstep += (currentFootstepRate * walkSpeed);
-            }
-            else
-            {
-                _animator.SetFloat("speed", 0);
-            }
-
-            if (_characterController.isGrounded && _velocity.y < 0)
-            {
-                _animator.SetBool("jump", false);
-            }
-            _characterController.Move(_velocity * Time.fixedDeltaTime);
-        }
-
-        
-        private void GroundChecker()
-        {
-            Ray checkerRay = new Ray(transform.position + (Vector3.up * 0.1f), Vector3.down);
-
-            if (Physics.Raycast(checkerRay, out _groundHit, groundCheckDistance))
-            {
-                if (_groundHit.collider.GetComponent<Terrain>())
-                {
-                    _currentTexture = _terrainLayers[GetTerrainTexture(transform.position)].diffuseTexture;
-                }
-                if (_groundHit.collider.GetComponent<Renderer>())
-                {
-                    _currentTexture = GetRendererTexture();
-                }
-            }
-        }
-
-        
+        #endregion
+        #region other
         private void PlayFootstep()
         {
             for (int i = 0; i < groundLayers.Count; i++)
@@ -611,5 +623,6 @@ namespace Suntail
             _previousClip = selectedClip;
             return selectedClip;
         }
+        #endregion
     }
 }
