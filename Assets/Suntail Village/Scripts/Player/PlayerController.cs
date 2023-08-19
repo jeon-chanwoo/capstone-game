@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using TMPro;
+using TMPro.Examples;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.UI;
 
 /*Simple player movement controller, based on character controller component, 
 with footstep system based on check the current texture of the component*/
@@ -34,6 +37,13 @@ namespace Suntail
         [SerializeField] public float walkSpeed;//이속
         [SerializeField] private float runMultiplier;
         [SerializeField] private float jumpForce;
+        [SerializeField] private bool _skillOneIsClicked =true;
+        [SerializeField] private float _skillOnePower = 6.0f;
+        [SerializeField] private float _skillOneLeft = 0.0f;
+        [SerializeField] private float _skillOneCool = 10.0f;
+        [SerializeField] private Button _skillOneButton;
+        [SerializeField] private Image _skillOneImage;
+        private float _count = 1.0f;
         private int attackCount = 0;
         private float attackCoolDown = 0.4f;
         private bool isAttackInputDisabled = false;
@@ -139,6 +149,9 @@ namespace Suntail
                 Jump();
                 Movement();
             }
+
+            Skill();
+
             MouseLook();
             CheckInput();
             if (!isLeftControlPressed)
@@ -148,6 +161,50 @@ namespace Suntail
            
         }
         
+        private void Skill()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                if (_skillOneIsClicked)
+                {
+                    _animator.Play("PowerAttack");
+                    CheckMonsterCollision(_skillOnePower);
+                    StartCoroutine(DisableInputForDuration(attackCoolDown));
+
+                    _skillOneLeft = _skillOneCool;
+                    _skillOneIsClicked = false;
+                    if (_skillOneButton != null)
+                        _skillOneButton.enabled = false;
+                }
+               
+            }
+
+            if (!_skillOneIsClicked)
+            {
+                _skillOneLeft -= Time.deltaTime * _count;
+                if(_skillOneLeft <= 0)
+                {
+                    SkillCoolEnd();
+                    _skillOneLeft = 0.0f;
+                    if(_skillOneButton != null)
+                        _skillOneButton.enabled = true;
+                    _skillOneIsClicked = true;
+                }
+                else
+                {
+                    float ratio = 1.0f - (_skillOneLeft / _skillOneCool);
+                    if(_skillOneImage != null)
+                        _skillOneImage.fillAmount = ratio;
+                }
+            }
+        }
+        public void SkillCoolEnd()
+        {
+            _skillOneLeft = _skillOneCool;
+            _skillOneIsClicked = true;
+            if(_skillOneButton != null )
+                _skillOneButton.enabled = false;
+        }
 
         private void CheckMonsterCollision()
         {
@@ -179,6 +236,41 @@ namespace Suntail
                     {
                         // 무기와 몬스터 충돌 시 몬스터의 체력 감소
                         monster.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
+                    }
+                }
+            }
+        }
+
+        private void CheckMonsterCollision(float _skillOnePower)
+        {
+            Collider weaponCollider = currentWeapon.GetComponent<Collider>();
+
+            // currentWeapon의 콜라이더가 없을 경우 처리
+            if (weaponCollider == null)
+            {
+                Debug.LogWarning("Weapon collider not found.");
+                return;
+            }
+
+            // 캐릭터 전방으로 레이캐스트 발사
+            Ray ray2 = new Ray(direction.transform.position + new Vector3(0.0f, 1.0f, 0.0f), direction.transform.forward);
+            Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);
+
+            RaycastHit[] hits;
+
+            // 레이캐스트로 충돌 검사
+            hits = Physics.RaycastAll(ray2, currentWeapon.attackRange);
+
+            foreach (RaycastHit hit in hits)
+            {
+                // 무기의 콜라이더와 몬스터의 콜라이더가 닿았을 때
+                if (hit.collider.CompareTag("Monster"))
+                {
+                    Monster monster = hit.collider.GetComponent<Monster>();
+                    if (monster != null)
+                    {
+                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
+                        monster.TakeDamage(_skillOnePower); // 무기의 공격력만큼 체력 감소시키도록 수정
                     }
                 }
             }

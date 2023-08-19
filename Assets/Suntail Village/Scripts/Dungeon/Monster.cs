@@ -216,6 +216,7 @@ public class Monster : MonoBehaviour
         Debug.Log(currentHealth+"/"+maxHealth);
         if (currentHealth <= 0)
         {
+            currentHealth= 0;
             state = State.Die;
             Debug.Log("аж╠щ");
         }
