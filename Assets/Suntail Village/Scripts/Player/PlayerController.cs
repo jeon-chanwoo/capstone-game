@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -50,6 +51,7 @@ namespace Suntail
         [SerializeField] private Button _skillOneButton;
         [SerializeField] private Image _skillOneImage;
         [SerializeField] private Text _skillOneText;
+        private bool _isSkillOneCoolDown = false;
 
         [Header("Skill Two")]
         private bool _skillTwoIsClicked = true;
@@ -59,7 +61,16 @@ namespace Suntail
         [SerializeField] private Button _skillTwoButton;
         [SerializeField] private Image _skillTwoImage;
         [SerializeField] private Text _skillTwoText;
+
         [Header("Skill Three")]
+        private bool _skillThreeIsClicked = true;
+        [SerializeField] private float _skillThreeHeal = 30.0f;
+        [SerializeField] private float _skillThreeLeft = 0.0f;
+        [SerializeField] private float _skillThreeCool = 30.0f;
+        [SerializeField] private Button _skillThreeButton;
+        [SerializeField] private Image _skillThreeImage;
+        [SerializeField] private Text _skillThreeText;
+        private bool _isSkillThreeCoolDown = false;
 
         [Header("DeBuff")]
         private bool _debuffOn = false;
@@ -72,8 +83,10 @@ namespace Suntail
         [SerializeField] private Button _debuffButton;
         [SerializeField] private Image _debuffImage;
         [SerializeField] private Text _debuffText;
+        [SerializeField] private Text _debuffStack;
+        private float _debuffCount = 0.0f;
 
-
+        private bool _isAnimatingSkill = false;
         private float _one = 1.0f;//쿨타임 도와주는 함수
         
         #endregion
@@ -178,8 +191,7 @@ namespace Suntail
             #region Camera
             MouseLook();
             CheckInput();
-            if (!isLeftControlPressed)
-                Zoom();
+            Zoom();
             #endregion
         }
         #region attack
@@ -191,44 +203,49 @@ namespace Suntail
                 _debuffText.gameObject.SetActive(false);
                 _debuffOn = false;
                 _debuff = 0.0f;
+                _debuffCount = 0.0f;
                 _debuffButton.gameObject.SetActive(false);
                 _debuffImage.gameObject.SetActive(false);
-                _debuffRemainingTime = 0.0f;
+                _debuffStack.gameObject.SetActive(false);
             }
-            else
+            else if(Time.time - _lastDamageTime < _debuffResetTime && _debuffOn)
             {
-                
                 _debuffRemainingTime = _debuffResetTime-(Time.time-_lastDamageTime);
-                //디버프 남은시간
-                _debuffOn= true;
+                _debuffStack.gameObject.SetActive(true);
                 _debuffButton.gameObject.SetActive(true);
                 _debuffImage.gameObject.SetActive(true);
                 _debuffText.gameObject.SetActive(true);
                 _debuffText.text = ((int)_debuffRemainingTime).ToString();
+                _debuffStack.text = ("x"+(int)_debuffCount).ToString();
+
                 float ratio = 1.0f - (_debuffRemainingTime / _debuffResetTime);
                 if (_debuffImage != null)
                     _debuffImage.fillAmount = ratio;
-
-                
             }
-
-            
         }
         private void Skill()
         {
             #region 스킬1
             if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded)
             {
-                if (_skillOneIsClicked)
+                if (_skillOneIsClicked && !_isSkillOneCoolDown && !_isAnimatingSkill)
                 {   
+                    _isAnimatingSkill = true;
                     _animator.Play("PowerAttack");
                     CheckMonsterCollision(_skillOnePower);
-                    StartCoroutine(DisableInputForDuration(attackCoolDown));
-
+                    walkSpeed = 0.0f;
+                    _isSkillOneCoolDown = true;
                     _skillOneLeft = _skillOneCool;
-                    _skillOneIsClicked = false;
                     if (_skillOneButton != null)
                         _skillOneButton.enabled = false;
+                    _skillOneIsClicked = false;
+
+                    StartCoroutine(DisableSkillMove(0.9f, () =>
+                    {
+                        walkSpeed = 4.0f;
+                        _isAnimatingSkill = false;
+                    }));
+
                 }
 
             }
@@ -244,6 +261,7 @@ namespace Suntail
                     _skillOneLeft = 0.0f;
                     if (_skillOneButton != null)
                         _skillOneButton.enabled = true;
+                    _isSkillOneCoolDown = false;
                     _skillOneIsClicked = true;
                 }
                 else
@@ -254,11 +272,15 @@ namespace Suntail
                 }
             }
             #endregion
+
             #region 스킬2
             if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded)
             {
-                if (_skillTwoIsClicked)
+                if (_skillTwoIsClicked && !_isAnimatingSkill)
                 {
+                    _isAnimatingSkill = true;
+                    _isJumping = true;
+                    walkSpeed = 0.0f;
                     _animator.Play("Defend");
                     _defense = _skillTwoDefend;
                 }
@@ -266,8 +288,11 @@ namespace Suntail
             }
             if (Input.GetKeyUp(KeyCode.Alpha2) && _skillTwoLeft == 0)
             {
-                
+                _isAnimatingSkill = false;
+                _isJumping = false;
+                walkSpeed = 4.0f;
                 _animator.Play("WAIT");
+                
                 _skillTwoLeft = _skillTwoCool;
                 _defense = _one;
                 _skillTwoIsClicked = false;
@@ -295,8 +320,59 @@ namespace Suntail
                         _skillTwoImage.fillAmount = ratio;
                 }
             }
-        }
             #endregion
+            #region 스킬3
+            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded)
+            {
+                if (_skillThreeIsClicked && !_isSkillThreeCoolDown && !_isAnimatingSkill)
+                {
+                    _isAnimatingSkill = true;
+                    _animator.Play("Heal");
+                    _hp += _skillThreeHeal;
+                    if (_hp >= _maxHP)
+                    {
+                        _hp = _maxHP;
+                    }
+                    walkSpeed = 0.0f;
+                    _isSkillThreeCoolDown = true;
+                    _skillThreeLeft = _skillThreeCool;
+                    _skillThreeIsClicked = false;
+                    if (_skillThreeButton != null)
+                        _skillThreeButton.enabled = false;
+                    StartCoroutine(DisableSkillMove(1.6f, () =>
+                    {
+                        walkSpeed = 4.0f;
+                        _isAnimatingSkill = false;
+                    }));
+
+                    
+                }
+
+            }
+
+            if (!_skillThreeIsClicked)
+            {
+                _skillThreeLeft -= Time.deltaTime * _one;
+                _skillThreeText.gameObject.SetActive(true);
+                _skillThreeText.text = ((int)_skillThreeLeft).ToString();
+                if (_skillThreeLeft <= 0)
+                {
+                    _skillThreeText.gameObject.SetActive(false);
+                    _skillThreeLeft = 0.0f;
+                    if (_skillThreeButton != null)
+                        _skillThreeButton.enabled = true;
+                    _skillThreeIsClicked = true;
+                }
+                else
+                {
+                    float ratio = 1.0f - (_skillThreeLeft / _skillThreeCool);
+                    if (_skillThreeImage != null)
+                        _skillThreeImage.fillAmount = ratio;
+                }
+            }
+            #endregion
+        }
+        
 
         private void CheckMonsterCollision()
         {
@@ -380,7 +456,9 @@ namespace Suntail
                 
                 if (attackCount == 0)
                 {
-                    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
+                    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
+                        _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
                     {
                         _animator.Play("Attack1");
                         CheckMonsterCollision();
@@ -399,7 +477,7 @@ namespace Suntail
 
                 else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1") &&
                          _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.6f && !isAttackInputDisabled)
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
@@ -431,30 +509,42 @@ namespace Suntail
             
             yield return new WaitForSeconds(delay);
             isAttackInputDisabled = false;
-            
-
         }
+        private IEnumerator DisableSkillMove(float delay, Action onComplete)
+        {
+            yield return new WaitForSeconds(delay);
+            onComplete?.Invoke();
+        }
+
         public void TakeDamage(float damageAmount) 
         {
-            _debuff += _debuffIncrease;
-            if(_debuff > _debuffMax) //디버프 최대치
+            Debug.Log(_hp);
+            if (_hp > 0)
             {
-                _debuff = _debuffMax;
-            }
-            _lastDamageTime = Time.time;//데미지 입은 시간
+                if (_debuffCount < 20)
+                {
+                    _debuffCount++;
+                }
+                _debuff += _debuffIncrease;
+                _debuffOn = true;
+                if (_debuff > _debuffMax) //디버프 최대치
+                {
+                    _debuff = _debuffMax;
+                }
+                _lastDamageTime = Time.time;//데미지 입은 시간
 
-            float _totalDamage = damageAmount + _debuff;
+                float _totalDamage = damageAmount + _debuff;
 
-            if (_defense >= _totalDamage)
-            {
-                return;
+                if (_defense >= _totalDamage)
+                {
+                    return;
+                }
+                else
+                {
+                    _hp -= _totalDamage - _defense;
+                }
             }
             else
-            {
-                _hp -= _totalDamage - _defense;
-            }
-            
-            if(_hp <= 0)
             {
                 _hp = 0;
             }
@@ -644,20 +734,22 @@ namespace Suntail
         }
         private void Zoom()
         {
-            if (playerCamera.transform.localPosition.y >= 0.6f && playerCamera.transform.localPosition.y <= 8.0f)
+            if (!isLeftControlPressed)
             {
-                float scrollWheel = Input.GetAxis("Mouse ScrollWheel");
-                Vector3 cameraDirection = this.transform.localRotation * Vector3.forward + this.transform.localRotation * Vector3.down;
-                playerCamera.transform.position += cameraDirection * Time.deltaTime * scrollWheel * scrollSpeed;
-
-            }
-            else if(playerCamera.transform.localPosition.y < 0.6f)
-            {
-                playerCamera.transform.localPosition = new Vector3(0.0f, 0.6f, -0.6f);
-            }
-            else
-            {
-                playerCamera.transform.localPosition = new Vector3(0.0f, 8.0f, -8.0f);
+                if (playerCamera.transform.localPosition.y >= 0.6f && playerCamera.transform.localPosition.y <= 8.0f)
+                {
+                    float scrollWheel = Input.GetAxis("Mouse ScrollWheel");
+                    Vector3 cameraDirection = this.transform.localRotation * Vector3.forward + this.transform.localRotation * Vector3.down;
+                    playerCamera.transform.position += cameraDirection * Time.deltaTime * scrollWheel * scrollSpeed;
+                }
+                else if (playerCamera.transform.localPosition.y < 0.6f)
+                {
+                    playerCamera.transform.localPosition = new Vector3(0.0f, 0.6f, -0.6f);
+                }
+                else
+                {
+                    playerCamera.transform.localPosition = new Vector3(0.0f, 8.0f, -8.0f);
+                }
             }
         }
         #endregion
@@ -724,13 +816,13 @@ namespace Suntail
         private AudioClip RandomClip(AudioClip[] clips)
         {
             int attempts = 2;
-            footstepSource.pitch = Random.Range(0.9f, 1.1f);
+            footstepSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
 
-            AudioClip selectedClip = clips[Random.Range(0, clips.Length)];
+            AudioClip selectedClip = clips[UnityEngine.Random.Range(0, clips.Length)];
 
             while (selectedClip == _previousClip && attempts > 0)
             {
-                selectedClip = clips[Random.Range(0, clips.Length)];
+                selectedClip = clips[UnityEngine.Random.Range(0, clips.Length)];
 
                 attempts--;
             }
