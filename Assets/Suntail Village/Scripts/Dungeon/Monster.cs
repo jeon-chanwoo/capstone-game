@@ -221,7 +221,6 @@ public class Monster : MonoBehaviour
 
             isAttacking= false;
         }
-        Debug.Log("코루틴 호출됨");
     }
 
     public void SetHealth(float health)

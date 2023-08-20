@@ -35,19 +35,47 @@ namespace Suntail
         [SerializeField] public float _atkPower;//공격력
         [SerializeField] public float _defense;//방어력
         [SerializeField] public float walkSpeed;//이속
-        [SerializeField] private float runMultiplier;
-        [SerializeField] private float jumpForce;
-        [SerializeField] private bool _skillOneIsClicked =true;
+        [SerializeField] private float runMultiplier;//대쉬속도
+        [SerializeField] private float jumpForce;//점프력
+        [SerializeField] private Weapon currentWeapon;//장착하고있는 무기
+        private int attackCount = 0;//연속공격횟수
+        private float attackCoolDown = 0.4f;//공격간 쿨다운
+        private bool isAttackInputDisabled = false;//공격가능여부
+
+        [Header("Skill One")]
+        private bool _skillOneIsClicked =true;
         [SerializeField] private float _skillOnePower = 6.0f;
         [SerializeField] private float _skillOneLeft = 0.0f;
         [SerializeField] private float _skillOneCool = 10.0f;
         [SerializeField] private Button _skillOneButton;
         [SerializeField] private Image _skillOneImage;
-        private float _count = 1.0f;
-        private int attackCount = 0;
-        private float attackCoolDown = 0.4f;
-        private bool isAttackInputDisabled = false;
-        [SerializeField] private Weapon currentWeapon;
+        [SerializeField] private Text _skillOneText;
+
+        [Header("Skill Two")]
+        private bool _skillTwoIsClicked = true;
+        [SerializeField] private float _skillTwoDefend = 100.0f;
+        [SerializeField] private float _skillTwoLeft = 0.0f;
+        [SerializeField] private float _skillTwoCool = 30.0f;
+        [SerializeField] private Button _skillTwoButton;
+        [SerializeField] private Image _skillTwoImage;
+        [SerializeField] private Text _skillTwoText;
+        [Header("Skill Three")]
+
+        [Header("DeBuff")]
+        private bool _debuffOn = false;
+        private float _debuffRemainingTime;
+        [SerializeField] private float _debuff = 0.0f;
+        [SerializeField] private float _debuffIncrease = 2.0f;
+        [SerializeField] private float _debuffMax = 20.0f;
+        private float _debuffResetTime = 5.0f;
+        private float _lastDamageTime = 0.0f;
+        [SerializeField] private Button _debuffButton;
+        [SerializeField] private Image _debuffImage;
+        [SerializeField] private Text _debuffText;
+
+
+        private float _one = 1.0f;//쿨타임 도와주는 함수
+        
         #endregion
         #region move
         [Header("Movement")]
@@ -137,24 +165,14 @@ namespace Suntail
         private void Update()
         {
             #region Attack
-            if (_characterController.isGrounded)
-            {
-                Attack();
-            }
+            Attack();
             Skill();
             AttackReset();
+            DebuffTimeCheck();
             #endregion
             #region move
-            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) || 
-                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
-                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) && 
-                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f
-                ))
-            {
-                Jump();
-                Movement();
-            }
+            Movement();
+            Jump();
             GroundChecker();
             #endregion
             #region Camera
@@ -165,12 +183,44 @@ namespace Suntail
             #endregion
         }
         #region attack
+        private void DebuffTimeCheck()
+        {
+            if((Time.time - _lastDamageTime >= _debuffResetTime) && _debuffOn)
+               //현재시간-  데미지 입은시간차이가   5이상
+            {
+                _debuffText.gameObject.SetActive(false);
+                _debuffOn = false;
+                _debuff = 0.0f;
+                _debuffButton.gameObject.SetActive(false);
+                _debuffImage.gameObject.SetActive(false);
+                _debuffRemainingTime = 0.0f;
+            }
+            else
+            {
+                
+                _debuffRemainingTime = _debuffResetTime-(Time.time-_lastDamageTime);
+                //디버프 남은시간
+                _debuffOn= true;
+                _debuffButton.gameObject.SetActive(true);
+                _debuffImage.gameObject.SetActive(true);
+                _debuffText.gameObject.SetActive(true);
+                _debuffText.text = ((int)_debuffRemainingTime).ToString();
+                float ratio = 1.0f - (_debuffRemainingTime / _debuffResetTime);
+                if (_debuffImage != null)
+                    _debuffImage.fillAmount = ratio;
+
+                
+            }
+
+            
+        }
         private void Skill()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            #region 스킬1
+            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded)
             {
                 if (_skillOneIsClicked)
-                {
+                {   
                     _animator.Play("PowerAttack");
                     CheckMonsterCollision(_skillOnePower);
                     StartCoroutine(DisableInputForDuration(attackCoolDown));
@@ -180,35 +230,74 @@ namespace Suntail
                     if (_skillOneButton != null)
                         _skillOneButton.enabled = false;
                 }
-               
+
             }
 
             if (!_skillOneIsClicked)
             {
-                _skillOneLeft -= Time.deltaTime * _count;
-                if(_skillOneLeft <= 0)
+                _skillOneLeft -= Time.deltaTime * _one;
+                _skillOneText.gameObject.SetActive(true);
+                _skillOneText.text = ((int)_skillOneLeft).ToString();
+                if (_skillOneLeft <= 0)
                 {
-                    SkillCoolEnd();
+                    _skillOneText.gameObject.SetActive(false);
                     _skillOneLeft = 0.0f;
-                    if(_skillOneButton != null)
+                    if (_skillOneButton != null)
                         _skillOneButton.enabled = true;
                     _skillOneIsClicked = true;
                 }
                 else
                 {
                     float ratio = 1.0f - (_skillOneLeft / _skillOneCool);
-                    if(_skillOneImage != null)
+                    if (_skillOneImage != null)
                         _skillOneImage.fillAmount = ratio;
                 }
             }
+            #endregion
+            #region 스킬2
+            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded)
+            {
+                if (_skillTwoIsClicked)
+                {
+                    _animator.Play("Defend");
+                    _defense = _skillTwoDefend;
+                }
+
+            }
+            if (Input.GetKeyUp(KeyCode.Alpha2) && _skillTwoLeft == 0)
+            {
+                
+                _animator.Play("WAIT");
+                _skillTwoLeft = _skillTwoCool;
+                _defense = _one;
+                _skillTwoIsClicked = false;
+                if (_skillTwoButton != null)
+                    _skillTwoButton.enabled = false;
+            }
+
+            if (!_skillTwoIsClicked)
+            {
+                _skillTwoLeft -= Time.deltaTime * _one;
+                _skillTwoText.gameObject.SetActive(true);
+                _skillTwoText.text = ((int)_skillTwoLeft).ToString();
+                if (_skillTwoLeft <= 0)
+                {
+                    _skillTwoText.gameObject.SetActive(false);
+                    _skillTwoLeft = 0.0f;
+                    if (_skillTwoButton != null)
+                        _skillTwoButton.enabled = true;
+                    _skillTwoIsClicked = true;
+                }
+                else
+                {
+                    float ratio = 1.0f - (_skillTwoLeft / _skillTwoCool);
+                    if (_skillTwoImage != null)
+                        _skillTwoImage.fillAmount = ratio;
+                }
+            }
         }
-        public void SkillCoolEnd()
-        {
-            _skillOneLeft = _skillOneCool;
-            _skillOneIsClicked = true;
-            if(_skillOneButton != null )
-                _skillOneButton.enabled = false;
-        }
+            #endregion
+
         private void CheckMonsterCollision()
         {
             Collider weaponCollider = currentWeapon.GetComponent<Collider>();
@@ -286,7 +375,7 @@ namespace Suntail
         }
         private void Attack()
         {
-            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled)
+            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded)
             {
                 
                 if (attackCount == 0)
@@ -347,21 +436,39 @@ namespace Suntail
         }
         public void TakeDamage(float damageAmount) 
         {
-            _hp -= damageAmount-_defense;
-            if(_hp <= 0)
+            _debuff += _debuffIncrease;
+            if(_debuff > _debuffMax) //디버프 최대치
             {
-                _hp = 0;
+                _debuff = _debuffMax;
+            }
+            _lastDamageTime = Time.time;//데미지 입은 시간
+
+            float _totalDamage = damageAmount + _debuff;
+
+            if (_defense >= _totalDamage)
+            {
+                return;
             }
             else
             {
-
+                _hp -= _totalDamage - _defense;
+            }
+            
+            if(_hp <= 0)
+            {
+                _hp = 0;
             }
         }
         #endregion
         #region move
         private void Jump()
         {
-            if (!_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
+            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
+                        (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
+                            (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
+                                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                                    _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f) &&
+                                        !_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
             {
                 _velocity.y = Mathf.Sqrt(jumpForce * 2f * -gravity);
                 _animator.SetBool("jump", true);
@@ -418,64 +525,71 @@ namespace Suntail
         }
         private void Movement()
         {
-            if (_characterController.isGrounded && _velocity.y < 0)
+            if(!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
+                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
+                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
+                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f
+                ))
             {
-                _velocity.y = -2f;
-            }
+                if (_characterController.isGrounded && _velocity.y < 0)
+                {
+                    _velocity.y = -2f;
+                }
 
-            _horizontalMovement = Input.GetAxis("Horizontal");
-            _verticalMovement = Input.GetAxis("Vertical");
-            #region 이동방향
-            if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 45, 0));
-            }
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 135, 0));
-            }
-            else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 225, 0));
-            }
-            else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 315, 0));
-            }
-            else if (Input.GetKey(KeyCode.W))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 0, 0));
-            }
-            else if (Input.GetKey(KeyCode.D))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 90, 0));
-            }
-            else if (Input.GetKey(KeyCode.S))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
-            }
-            else if (Input.GetKey(KeyCode.A))
-            {
-                direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 270, 0));
-            }
-            else
-            {
-                return;
-            }
+                _horizontalMovement = Input.GetAxis("Horizontal");
+                _verticalMovement = Input.GetAxis("Vertical");
+                #region 이동방향
+                if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 45, 0));
+                }
+                else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 135, 0));
+                }
+                else if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 225, 0));
+                }
+                else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 315, 0));
+                }
+                else if (Input.GetKey(KeyCode.W))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 0, 0));
+                }
+                else if (Input.GetKey(KeyCode.D))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 90, 0));
+                }
+                else if (Input.GetKey(KeyCode.S))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 180, 0));
+                }
+                else if (Input.GetKey(KeyCode.A))
+                {
+                    direction.gameObject.transform.rotation = this.transform.rotation * Quaternion.Euler(new Vector3(0, 270, 0));
+                }
+                else
+                {
+                    return;
+                }
 
-            #endregion
+                #endregion
 
 
-            _moveDirection = transform.forward * _verticalMovement + transform.right * _horizontalMovement;
+                _moveDirection = transform.forward * _verticalMovement + transform.right * _horizontalMovement;
 
-            _isRunning = Input.GetKey(runKey);
-            _currentSpeed = walkSpeed * (_isRunning ? runMultiplier : 1f);
+                _isRunning = Input.GetKey(runKey);
+                _currentSpeed = walkSpeed * (_isRunning ? runMultiplier : 1f);
 
-            _characterController.Move(_moveDirection * _currentSpeed * Time.deltaTime);
+                _characterController.Move(_moveDirection * _currentSpeed * Time.deltaTime);
 
-            _velocity.y += gravity * Time.deltaTime;
-            _characterController.Move(_velocity * Time.deltaTime);
-
+                _velocity.y += gravity * Time.deltaTime;
+                _characterController.Move(_velocity * Time.deltaTime);
+            }
         }
         private void GroundChecker()
         {
