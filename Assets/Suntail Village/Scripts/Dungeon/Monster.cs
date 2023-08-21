@@ -2,13 +2,14 @@ using Suntail;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Monster : MonoBehaviour
 {
     public float currentHealth;
     public float maxHealth;
     public float moveSpeed = 5.0f;
-    public float transAttack = 3.0f;
+    public float transAttack = 4.0f;
     public float healthIncreaseRate = 1.0f;
     public Transform target;
     public float count = 0.0f;
@@ -149,6 +150,10 @@ public class Monster : MonoBehaviour
     private void UpdateDie()
     {
         anim.Play("Die");
+        Transform stageClearTextTransform = Camera.main.transform.Find("UI/Stage1Clear");
+        Text _text = stageClearTextTransform.GetComponent<Text>();
+        _text.gameObject.SetActive(true);
+        _text.CrossFadeAlpha(0, 5f, false);
         StartCoroutine(DestroyAfterDelay(5.0f));
         OpenDoor();
     }
