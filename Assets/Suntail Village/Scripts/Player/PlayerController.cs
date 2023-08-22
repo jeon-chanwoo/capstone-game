@@ -528,7 +528,7 @@ namespace Suntail
         }
         private void Attack()
         {
-            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded)
+            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill)
             {
                 
                 if (attackCount == 0)
@@ -641,7 +641,7 @@ namespace Suntail
 
         public void IncreaseMp()
         {
-            if (_mp > 0 && _mp < _maxMP)
+            if (_mp < _maxMP)
             {
                 _countMP += _one * Time.deltaTime;
                 if (_countMP > 0.9f)

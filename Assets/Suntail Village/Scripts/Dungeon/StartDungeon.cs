@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class StartDungeon : MonoBehaviour
 {
-    public int stage = 1;
     [SerializeField] private Image blackScreenImage;
     [SerializeField] private Text blackScreenText1;
     [SerializeField] private float blackScreenDuration = 4f;

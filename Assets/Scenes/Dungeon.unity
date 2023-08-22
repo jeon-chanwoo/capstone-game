@@ -57307,6 +57307,86 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 469326, guid: 68c36969be1a05e4ba39680b7d1b04b8, type: 3}
   m_PrefabInstance: {fileID: 1451891970}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1453898828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1453898829}
+  - component: {fileID: 1453898831}
+  - component: {fileID: 1453898830}
+  m_Layer: 5
+  m_Name: ClimbStairs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1453898829
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453898828}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6582954702606046719}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1453898830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453898828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: c98451f02d9077f43b6de6012e3cebaf, type: 3}
+    m_FontSize: 60
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 1
+    m_MaxSize: 213
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: "\uACC4\uB2E8 \uC624\uB974\uB294 \uC911..."
+--- !u!222 &1453898831
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453898828}
+  m_CullTransparentMesh: 0
 --- !u!1001 &1456463519
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87008,6 +87088,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2139208454674166652, guid: 846e9fcf778f8304c8776b52e03ab556, type: 3}
     - target: {fileID: 4950563846236448848, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
+      propertyPath: monsterPrefab
+      value: 
+      objectReference: {fileID: 2181404036320740572, guid: 56f2d6be43e9a6c47b47c73792da51a9, type: 3}
+    - target: {fileID: 4950563846236448848, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
+      propertyPath: monster1Prefab
+      value: 
+      objectReference: {fileID: 2181404036320740572, guid: 56f2d6be43e9a6c47b47c73792da51a9, type: 3}
+    - target: {fileID: 4950563846236448848, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
       propertyPath: otherObjectAnimator1
       value: 
       objectReference: {fileID: 1716934610}
@@ -87023,6 +87111,10 @@ PrefabInstance:
       propertyPath: monsterPrefab
       value: 
       objectReference: {fileID: 2181404036320740572, guid: 56f2d6be43e9a6c47b47c73792da51a9, type: 3}
+    - target: {fileID: 6900542317638694778, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
+      propertyPath: game1Prefab
+      value: 
+      objectReference: {fileID: 2139208454674166652, guid: 846e9fcf778f8304c8776b52e03ab556, type: 3}
     - target: {fileID: 6900542317638694778, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
       propertyPath: otherObjectAnimator1
       value: 
@@ -87083,7 +87175,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Triggers
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3375185502658951360, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
+    - {fileID: 6155831857527369409, guid: fd4b0c26313d127458fc6637a7ff7333, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -87376,26 +87470,26 @@ MonoBehaviour:
   currentWeapon: {fileID: 105454342284289322}
   _skillOnePower: 6
   _skillOneLeft: 0
-  _skillOneCool: 10
+  _skillOneCool: 5
   _skillOneMp: 15
   _skillOneButton: {fileID: 2467051311380471583}
   _skillOneImage: {fileID: 3669227886755215046}
   _skillOneText: {fileID: 3664333952922638475}
   _skillTwoDefend: 100
   _skillTwoLeft: 0
-  _skillTwoCool: 30
+  _skillTwoCool: 10
   _skillTwoMp: 40
   _skillTwoButton: {fileID: 6770492398742674334}
   _skillTwoImage: {fileID: 6228117400377387878}
   _skillTwoText: {fileID: 5149860255362341136}
   _skillThreeHeal: 30
   _skillThreeLeft: 0
-  _skillThreeCool: 30
+  _skillThreeCool: 10
   _skillThreeMp: 40
   _skillThreeButton: {fileID: 4899856719917087479}
   _skillThreeImage: {fileID: 160172341327874824}
   _skillThreeText: {fileID: 7680318629478654144}
-  _skillFourHp: -20
+  _skillFourHp: 20
   _skillFourMp: 30
   _skillFourLeft: 0
   _skillFourCool: 1
@@ -88311,7 +88405,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8736baacd2d2b6440baeb490853d8b40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stage: 1
   blackScreenImage: {fileID: 9171185845453038375}
   blackScreenText1: {fileID: 1107876}
   blackScreenDuration: 4
@@ -88565,6 +88658,7 @@ RectTransform:
   - {fileID: 5208239763777575422}
   - {fileID: 1107878}
   - {fileID: 1429436703}
+  - {fileID: 1453898829}
   m_Father: {fileID: 3726380065926803326}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

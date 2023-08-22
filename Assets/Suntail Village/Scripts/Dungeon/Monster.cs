@@ -10,7 +10,7 @@ public class Monster : MonoBehaviour
     public float maxHealth;
     public float moveSpeed = 5.0f;
     public float transAttack = 4.0f;
-    public float healthIncreaseRate = 1.0f;
+    public float healthIncreaseRate = 4.0f;
     public Transform target;
     public float count = 0.0f;
     NavMeshAgent agent;
@@ -31,7 +31,7 @@ public class Monster : MonoBehaviour
 
     private void Start()
     {
-        SetHealth(50.0f);
+        SetHealth(200.0f);
         state = State.Idle;
         agent = GetComponent<NavMeshAgent>();
     }
@@ -130,7 +130,7 @@ public class Monster : MonoBehaviour
     private void UpdateGetHit()
     {
 
-        if (currentHealth % 5 == 0)
+        if (currentHealth % 10 == 0)
             anim.Play("Get Hit");
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
