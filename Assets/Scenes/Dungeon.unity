@@ -162,7 +162,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2096facb677486348b8da97b52832ff5, type: 3}
+    m_Font: {fileID: 12800000, guid: 71c8e319ad66900488fef9350ced2440, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 1
@@ -56588,7 +56588,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2096facb677486348b8da97b52832ff5, type: 3}
+    m_Font: {fileID: 12800000, guid: 71c8e319ad66900488fef9350ced2440, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 1
@@ -57366,7 +57366,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: c98451f02d9077f43b6de6012e3cebaf, type: 3}
+    m_Font: {fileID: 12800000, guid: 71c8e319ad66900488fef9350ced2440, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 1
@@ -79828,6 +79828,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Directional Light
       objectReference: {fileID: 0}
+    - target: {fileID: 1916835535292236167, guid: 60206bdac6fef2a408667a52c1cd388d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2824877829871802947, guid: 60206bdac6fef2a408667a52c1cd388d, type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 2560
@@ -84713,21 +84717,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!4 &15634594574498948
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509912912887542318}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3726380065926803326}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &25790601598083346
 GameObject:
   m_ObjectHideFlags: 0
@@ -85143,7 +85132,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2096facb677486348b8da97b52832ff5, type: 3}
+    m_Font: {fileID: 12800000, guid: 71c8e319ad66900488fef9350ced2440, type: 3}
     m_FontSize: 60
     m_FontStyle: 0
     m_BestFit: 1
@@ -86570,7 +86559,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
@@ -87083,7 +87072,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 15634594574498948}
   - {fileID: 6582954702606046719}
   m_Father: {fileID: 3813394565091185131}
   m_RootOrder: 0
@@ -89061,22 +89049,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1596618340910636809}
   m_CullTransparentMesh: 1
---- !u!1 &7509912912887542318
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 15634594574498948}
-  m_Layer: 0
-  m_Name: ItemHolder
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!224 &7551625177705663465
 RectTransform:
   m_ObjectHideFlags: 0
@@ -89561,7 +89533,7 @@ MonoBehaviour:
   itemTag: Item
   castleDoorTag: CastleDoor
   mainCamera: {fileID: 5391520894792680304}
-  pickupParent: {fileID: 15634594574498948}
+  pickupParent: {fileID: 0}
   interactionKey: 101
   minSpeed: 0
   maxSpeed: 3000
