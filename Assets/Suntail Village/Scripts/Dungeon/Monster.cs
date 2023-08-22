@@ -9,7 +9,7 @@ public class Monster : MonoBehaviour
     public float currentHealth;
     public float maxHealth;
     public float moveSpeed = 5.0f;
-    public float transAttack = 4.0f;
+    public float transAttack = 5.0f;
     public float healthIncreaseRate = 4.0f;
     public Transform target;
     public float count = 0.0f;
@@ -37,13 +37,13 @@ public class Monster : MonoBehaviour
     }
     private void Update()
     {
-        if (((anim.GetCurrentAnimatorStateInfo(0).IsName("Run")&& 
+        if (((anim.GetCurrentAnimatorStateInfo(0).IsName("Run") &&
             anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f) ||
-            (anim.GetCurrentAnimatorStateInfo(0).IsName("Get Hit") && 
+            (anim.GetCurrentAnimatorStateInfo(0).IsName("Get Hit") &&
             anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f) ||
-            (anim.GetCurrentAnimatorStateInfo(0).IsName("Basic Attack") && 
+            (anim.GetCurrentAnimatorStateInfo(0).IsName("Basic Attack") &&
             anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f) ||
-            (anim.GetCurrentAnimatorStateInfo(0).IsName("Claw Attack") && 
+            (anim.GetCurrentAnimatorStateInfo(0).IsName("Claw Attack") &&
             anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f)))
         {
             agent.isStopped = false;
@@ -51,6 +51,7 @@ public class Monster : MonoBehaviour
             agent.updatePosition = true;
             agent.updateRotation = true;
         }
+
         if (state == State.Idle)
         {
             UpdateIdle();
@@ -81,7 +82,7 @@ public class Monster : MonoBehaviour
         float distance = Vector3.Distance(transform.position, target.transform.position);
         if (distance > transAttack)
         {
-            
+
             if (target != null)
             {
                 state = State.Tracking;
@@ -103,7 +104,7 @@ public class Monster : MonoBehaviour
             state = State.Attack;
             ChooseRandomAttack();
         }
-        else
+        else if (distance > transAttack)
         {
             anim.SetTrigger("run");
             agent.speed = moveSpeed;
@@ -122,8 +123,9 @@ public class Monster : MonoBehaviour
             state = State.Tracking;
             anim.SetTrigger("run");
         }
-        else
+        else if (distance <= transAttack)
         {
+
             ChooseRandomAttack();
         }
     }
@@ -136,12 +138,15 @@ public class Monster : MonoBehaviour
         float distance = Vector3.Distance(transform.position, target.transform.position);
         if (distance <= transAttack)
         {
-            state = State.Attack;
-            ChooseRandomAttack();
+            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f)
+            {
+                state = State.Attack;
+                ChooseRandomAttack();
+            }
         }
         else if (distance > transAttack)
         {
-           
+
             state = State.Tracking;
             anim.SetTrigger("run");
         }
@@ -179,12 +184,15 @@ public class Monster : MonoBehaviour
             default:
                 break;
         }
+        anim.ResetTrigger("run");
+
+
     }
     public void Attack1()
     {
-        if(state == State.Attack && !isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Claw Attack"))
+        if (state == State.Attack && !isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Claw Attack"))
         {
-            if(target != null)
+            if (target != null)
             {
                 PlayerController player = target.GetComponent<PlayerController>();
                 if ((player != null))
@@ -200,17 +208,17 @@ public class Monster : MonoBehaviour
     }
     public void Attack2()
     {
-        if (state == State.Attack &&!isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Basic Attack"))
+        if (state == State.Attack && !isAttacking && anim.GetCurrentAnimatorStateInfo(0).IsName("Basic Attack"))
         {
             if (target != null)
             {
                 PlayerController player = target.GetComponent<PlayerController>();
                 if (player != null)
                 {
-                    if(!isAttacking)
+                    if (!isAttacking)
                     {
                         player.TakeDamage(4.0f);
-                        isAttacking=true;
+                        isAttacking = true;
                         StartCoroutine(ResetAttack(1.1f));
                     }
                 }
@@ -222,9 +230,8 @@ public class Monster : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         if (isAttacking)
-        {   
-
-            isAttacking= false;
+        {
+            isAttacking = false;
         }
     }
 
@@ -251,7 +258,7 @@ public class Monster : MonoBehaviour
     {
         GameObject door = GameObject.Find("SM_Env_Wall_233 (6)");
         Animator animator = door.GetComponent<Animator>();
-        if(animator != null)
+        if (animator != null)
         {
             animator.SetTrigger("open");
         }
@@ -266,12 +273,11 @@ public class Monster : MonoBehaviour
     public void TakeDamage(float damageAmount)
     {
         currentHealth -= damageAmount;
-        Debug.Log(currentHealth+"/"+maxHealth);
+        Debug.Log(currentHealth + "/" + maxHealth);
         if (currentHealth <= 0)
         {
-            currentHealth= 0;
+            currentHealth = 0;
             state = State.Die;
-            Debug.Log("аж╠щ");
         }
         else
         {

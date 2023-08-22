@@ -892,7 +892,7 @@ MonoBehaviour:
   currentHealth: 0
   maxHealth: 0
   moveSpeed: 10
-  transAttack: 2
+  transAttack: 2.5
   healthIncreaseRate: 1
   target: {fileID: 0}
   count: 0

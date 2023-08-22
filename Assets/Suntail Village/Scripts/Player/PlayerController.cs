@@ -10,6 +10,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /*Simple player movement controller, based on character controller component, 
@@ -103,6 +104,11 @@ namespace Suntail
         private float _one = 1.0f;//쿨타임 도와주는 함수
         private float _countHP = 0.0f;
         private float _countMP = 0.0f;
+
+        [Header("GameOver")]
+        [SerializeField] private Image blackScreenImage;
+        [SerializeField] private Text gameOverText;
+
         
         #endregion
         #region move
@@ -199,6 +205,7 @@ namespace Suntail
             DebuffTimeCheck();
             IncreaseHealth();
             IncreaseMp();
+            Die();
             #endregion
             #region move
             Movement();
@@ -594,7 +601,6 @@ namespace Suntail
         }
         public void TakeDamage(float damageAmount) 
         {
-            Debug.Log(_hp);
             if (_hp > 0)
             {
                 if (_debuffCount < 20)
@@ -619,10 +625,6 @@ namespace Suntail
                 {
                     _hp -= _totalDamage - _defense;
                 }
-            }
-            else
-            {
-                _hp = 0;
             }
         }
         public void IncreaseHealth()
@@ -651,6 +653,30 @@ namespace Suntail
                     _mp = Mathf.Min(_mp, _maxMP);
                 }
             }
+        }
+        public void Die()
+        {
+            if(_hp<=0)
+            {
+                Input.ResetInputAxes();
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                blackScreenImage.CrossFadeAlpha(1, 3, false);//다시 보이게
+                gameOverText.gameObject.SetActive(true);
+                StartCoroutine(gameOver());
+                StartCoroutine(goGameStart());
+            }
+        }
+        private IEnumerator gameOver()
+        {
+            gameOverText.CrossFadeAlpha(0,0, false);
+            yield return new WaitForSeconds(0.1f);
+            gameOverText.CrossFadeAlpha(1,3, false);
+        }
+        private IEnumerator goGameStart()
+        {
+            yield return new WaitForSeconds(4.0f);
+            SceneManager.LoadScene("GameStart");
         }
         #endregion
         #region move
