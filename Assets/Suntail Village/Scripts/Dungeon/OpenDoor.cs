@@ -13,7 +13,7 @@ public class OpenDoor : MonoBehaviour
     private CharacterController playerController;
     private Vector3 stageStartPosition;
     [SerializeField] private GameOne gameOne;
-    [SerializeField] private float blackScreenDuration = 4f;
+    //[SerializeField] private float blackScreenDuration = 4f;
     [SerializeField] private float TextDuration = 3f;
     public Animator otherObjectAnimator1; //입장문
     public Animator otherObjectAnimator2; //보스문

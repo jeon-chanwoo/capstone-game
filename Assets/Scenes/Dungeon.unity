@@ -67976,7 +67976,6 @@ MonoBehaviour:
   blackScreenImage: {fileID: 9171185845453038375}
   blackScreenText: {fileID: 1453898830}
   gameOne: {fileID: 0}
-  blackScreenDuration: 4
   TextDuration: 3
   otherObjectAnimator1: {fileID: 1040176612}
   otherObjectAnimator2: {fileID: 1716934610}

@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using TMPro.Examples;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -456,8 +455,6 @@ namespace Suntail
             #endregion
 
         }
-
-
         private void CheckMonsterCollision()
         {
             Collider weaponCollider = currentWeapon.GetComponent<Collider>();
@@ -640,7 +637,6 @@ namespace Suntail
                 }
             }
         }
-
         public void IncreaseMp()
         {
             if (_mp < _maxMP)
@@ -915,8 +911,6 @@ namespace Suntail
             }
             return texturesArray;
         }
-
-        
         private int GetTerrainTexture(Vector3 controllerPosition)
         {
             float[] array = GetTerrainTexturesArray(controllerPosition);
@@ -934,14 +928,12 @@ namespace Suntail
             }
             return maxArrayIndex;
         }
-
         private Texture2D GetRendererTexture()
         {
             Texture2D texture;
             texture = (Texture2D)_groundHit.collider.gameObject.GetComponent<Renderer>().material.mainTexture;
             return texture;
         }
-
         private AudioClip RandomClip(AudioClip[] clips)
         {
             int attempts = 2;
