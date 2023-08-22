@@ -150,7 +150,7 @@ public class Monster : MonoBehaviour
     private void UpdateDie()
     {
         anim.Play("Die");
-        Transform stageClearTextTransform = Camera.main.transform.Find("UI/Stage1Clear");
+        Transform stageClearTextTransform = Camera.main.transform.Find("UI/StageClear");
         Text _text = stageClearTextTransform.GetComponent<Text>();
         _text.gameObject.SetActive(true);
         _text.CrossFadeAlpha(0, 5f, false);
@@ -190,7 +190,7 @@ public class Monster : MonoBehaviour
                 if ((player != null))
                     if (!isAttacking)
                     {
-                        player.TakeDamage(4.0f);
+                        player.TakeDamage(6.0f);
                         isAttacking = true;
                         StartCoroutine(ResetAttack(1.43f));
                     }
@@ -209,7 +209,7 @@ public class Monster : MonoBehaviour
                 {
                     if(!isAttacking)
                     {
-                        player.TakeDamage(2.0f);
+                        player.TakeDamage(4.0f);
                         isAttacking=true;
                         StartCoroutine(ResetAttack(1.1f));
                     }
@@ -235,17 +235,15 @@ public class Monster : MonoBehaviour
     }
     public void IncreaseHealth()
     {
-        if (currentHealth < maxHealth)
+        if (currentHealth > 0 && currentHealth < maxHealth)
         {
             count += healthIncreaseRate * Time.deltaTime;
-            if(count>0.8f)
+            if (count > 0.8f)
             {
-                count= 0;
+                count = 0;
                 currentHealth += healthIncreaseRate;
                 currentHealth = Mathf.Min(currentHealth, maxHealth); // 최대값 초과 방지
             }
-                
-                
         }
     }
 

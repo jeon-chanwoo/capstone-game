@@ -47,7 +47,8 @@ namespace Suntail
         private bool _skillOneIsClicked =true;
         [SerializeField] private float _skillOnePower = 6.0f;
         [SerializeField] private float _skillOneLeft = 0.0f;
-        [SerializeField] private float _skillOneCool = 10.0f;
+        [SerializeField] private float _skillOneCool = 5.0f;
+        [SerializeField] private float _skillOneMp = 15.0f;
         [SerializeField] private Button _skillOneButton;
         [SerializeField] private Image _skillOneImage;
         [SerializeField] private Text _skillOneText;
@@ -57,7 +58,8 @@ namespace Suntail
         private bool _skillTwoIsClicked = true;
         [SerializeField] private float _skillTwoDefend = 100.0f;
         [SerializeField] private float _skillTwoLeft = 0.0f;
-        [SerializeField] private float _skillTwoCool = 30.0f;
+        [SerializeField] private float _skillTwoCool = 10.0f;
+        [SerializeField] private float _skillTwoMp = 40.0f;
         [SerializeField] private Button _skillTwoButton;
         [SerializeField] private Image _skillTwoImage;
         [SerializeField] private Text _skillTwoText;
@@ -66,11 +68,22 @@ namespace Suntail
         private bool _skillThreeIsClicked = true;
         [SerializeField] private float _skillThreeHeal = 30.0f;
         [SerializeField] private float _skillThreeLeft = 0.0f;
-        [SerializeField] private float _skillThreeCool = 30.0f;
+        [SerializeField] private float _skillThreeCool = 10.0f;
+        [SerializeField] private float _skillThreeMp = 40.0f;
         [SerializeField] private Button _skillThreeButton;
         [SerializeField] private Image _skillThreeImage;
         [SerializeField] private Text _skillThreeText;
         private bool _isSkillThreeCoolDown = false;
+
+        [Header("Skill Four")]
+        private bool _skillFourIsClicked = true;
+        [SerializeField] private float _skillFourHp = 20.0f;
+        [SerializeField] private float _skillFourMp = 30.0f;
+        [SerializeField] private float _skillFourLeft = 0.0f;
+        [SerializeField] private float _skillFourCool = 1.0f;
+        [SerializeField] private Button _skillFourButton;
+        [SerializeField] private Image _skillFourImage;
+        private bool _isSkillFourCoolDown = false;
 
         [Header("DeBuff")]
         private bool _debuffOn = false;
@@ -88,6 +101,8 @@ namespace Suntail
 
         private bool _isAnimatingSkill = false;
         private float _one = 1.0f;//쿨타임 도와주는 함수
+        private float _countHP = 0.0f;
+        private float _countMP = 0.0f;
         
         #endregion
         #region move
@@ -182,6 +197,8 @@ namespace Suntail
             Skill();
             AttackReset();
             DebuffTimeCheck();
+            IncreaseHealth();
+            IncreaseMp();
             #endregion
             #region move
             Movement();
@@ -226,10 +243,11 @@ namespace Suntail
         private void Skill()
         {
             #region 스킬1
-            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded)
+            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded && _mp>=_skillOneMp)
             {
                 if (_skillOneIsClicked && !_isSkillOneCoolDown && !_isAnimatingSkill)
-                {   
+                {
+                    _mp -= _skillOneMp;
                     _isAnimatingSkill = true;
                     _animator.Play("PowerAttack");
                     CheckMonsterCollision(_skillOnePower);
@@ -255,7 +273,7 @@ namespace Suntail
                 _skillOneLeft -= Time.deltaTime * _one;
                 _skillOneText.gameObject.SetActive(true);
                 _skillOneText.text = ((int)_skillOneLeft).ToString();
-                if (_skillOneLeft <= 0)
+                if (_skillOneLeft <= 0.0f)
                 {
                     _skillOneText.gameObject.SetActive(false);
                     _skillOneLeft = 0.0f;
@@ -272,12 +290,12 @@ namespace Suntail
                 }
             }
             #endregion
-
             #region 스킬2
-            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded)
+            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded && _mp >=_skillTwoMp)
             {
                 if (_skillTwoIsClicked && !_isAnimatingSkill)
                 {
+                    _mp -= _skillTwoMp;
                     _isAnimatingSkill = true;
                     _isJumping = true;
                     walkSpeed = 0.0f;
@@ -286,13 +304,12 @@ namespace Suntail
                 }
 
             }
-            if (Input.GetKeyUp(KeyCode.Alpha2) && _skillTwoLeft == 0)
+            if (Input.GetKeyUp(KeyCode.Alpha2) && _skillTwoLeft == 0 && _animator.GetCurrentAnimatorStateInfo(0).IsName("Defend"))
             {
+                walkSpeed = 4.0f;
                 _isAnimatingSkill = false;
                 _isJumping = false;
-                walkSpeed = 4.0f;
                 _animator.Play("WAIT");
-                
                 _skillTwoLeft = _skillTwoCool;
                 _defense = _one;
                 _skillTwoIsClicked = false;
@@ -305,7 +322,7 @@ namespace Suntail
                 _skillTwoLeft -= Time.deltaTime * _one;
                 _skillTwoText.gameObject.SetActive(true);
                 _skillTwoText.text = ((int)_skillTwoLeft).ToString();
-                if (_skillTwoLeft <= 0)
+                if (_skillTwoLeft <= 0.0)
                 {
                     _skillTwoText.gameObject.SetActive(false);
                     _skillTwoLeft = 0.0f;
@@ -322,10 +339,11 @@ namespace Suntail
             }
             #endregion
             #region 스킬3
-            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded)
+            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded && _mp>=_skillThreeMp)
             {
                 if (_skillThreeIsClicked && !_isSkillThreeCoolDown && !_isAnimatingSkill)
                 {
+                    _mp -= _skillThreeMp;
                     _isAnimatingSkill = true;
                     _animator.Play("Heal");
                     _hp += _skillThreeHeal;
@@ -355,13 +373,14 @@ namespace Suntail
                 _skillThreeLeft -= Time.deltaTime * _one;
                 _skillThreeText.gameObject.SetActive(true);
                 _skillThreeText.text = ((int)_skillThreeLeft).ToString();
-                if (_skillThreeLeft <= 0)
+                if (_skillThreeLeft <= 0.0f)
                 {
                     _skillThreeText.gameObject.SetActive(false);
                     _skillThreeLeft = 0.0f;
                     if (_skillThreeButton != null)
                         _skillThreeButton.enabled = true;
                     _skillThreeIsClicked = true;
+                    _isSkillThreeCoolDown = false;
                 }
                 else
                 {
@@ -371,8 +390,63 @@ namespace Suntail
                 }
             }
             #endregion
+            #region 스킬4
+            if (Input.GetKeyDown(KeyCode.Alpha4) && _characterController.isGrounded)
+            {
+                if (_skillFourIsClicked && !_isSkillFourCoolDown && !_isAnimatingSkill)
+                {
+                    _hp -= _skillFourHp;
+                    if (_hp < 0.0f)
+                    {
+                         _hp = 0.0f;
+                    }
+                    _mp += _skillFourMp;
+                    if (_mp > _maxMP)
+                    {
+                        _mp = _maxMP;
+                    }
+                    _isAnimatingSkill = true;
+                    _animator.Play("Sacrifice");
+                    walkSpeed = 0.0f;
+                    _isSkillFourCoolDown = true;
+                    _skillFourLeft = _skillFourCool;
+                    if (_skillFourButton != null)
+                        _skillFourButton.enabled = false;
+                    _skillFourIsClicked = false;
+
+                    StartCoroutine(DisableSkillMove(0.46f, () =>
+                    {
+                        walkSpeed = 4.0f;
+                        _isAnimatingSkill = false;
+                    }));
+
+                }
+
+            }
+
+            if (!_skillFourIsClicked)
+            {
+                _skillFourLeft -= Time.deltaTime * _one;
+                if (_skillFourLeft <= 0.00000f)
+                {
+                    _skillFourLeft = 0.00000f;
+                    if (_skillFourButton != null)
+                        _skillFourButton.enabled = true;
+                    _isSkillFourCoolDown = false;
+                    _skillFourIsClicked = true;
+                }
+                else
+                {
+                    float ratio = 1.0f - (_skillFourLeft / _skillFourCool);
+                    if (ratio > 0.97f) ratio = 1.0f;
+                    if (_skillFourImage != null)
+                        _skillFourImage.fillAmount = ratio;
+                }
+            }
+            #endregion
+
         }
-        
+
 
         private void CheckMonsterCollision()
         {
@@ -515,7 +589,6 @@ namespace Suntail
             yield return new WaitForSeconds(delay);
             onComplete?.Invoke();
         }
-
         public void TakeDamage(float damageAmount) 
         {
             Debug.Log(_hp);
@@ -547,6 +620,33 @@ namespace Suntail
             else
             {
                 _hp = 0;
+            }
+        }
+        public void IncreaseHealth()
+        {
+            if( _hp > 0 && _hp<_maxHP)
+            {
+                _countHP += _one * Time.deltaTime;
+                if(_countHP > 9.9f) 
+                {
+                    _countHP = 0;
+                    _hp += _one;
+                    _hp = Mathf.Min(_hp, _maxHP);
+                }
+            }
+        }
+
+        public void IncreaseMp()
+        {
+            if (_mp > 0 && _mp < _maxMP)
+            {
+                _countMP += _one * Time.deltaTime;
+                if (_countMP > 0.9f)
+                {
+                    _countMP = 0;
+                    _mp += _one;
+                    _mp = Mathf.Min(_mp, _maxMP);
+                }
             }
         }
         #endregion

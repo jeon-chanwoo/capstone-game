@@ -48,7 +48,7 @@ public class GameOne : MonoBehaviour
 
             if (currentStepGameScaffoldCount == requiredScaffoldCount)
             {
-                Transform gameClearTextTransform = Camera.main.transform.Find("UI/GameClear");
+                Transform gameClearTextTransform = Camera.main.transform.Find("UI/MiniGameClear");
                 Text _text = gameClearTextTransform.GetComponent<Text>();
                 _text.gameObject.SetActive(true);
                 _text.CrossFadeAlpha(0, 5f, false);
