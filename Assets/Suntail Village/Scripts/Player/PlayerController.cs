@@ -285,6 +285,7 @@ namespace Suntail
                 else
                 {
                     float ratio = 1.0f - (_skillOneLeft / _skillOneCool);
+                    if (ratio > 0.99f) ratio = 1.0f;
                     if (_skillOneImage != null)
                         _skillOneImage.fillAmount = ratio;
                 }
@@ -333,6 +334,7 @@ namespace Suntail
                 else
                 {
                     float ratio = 1.0f - (_skillTwoLeft / _skillTwoCool);
+                    if (ratio > 0.99f) ratio = 1.0f;
                     if (_skillTwoImage != null)
                         _skillTwoImage.fillAmount = ratio;
                 }
@@ -385,6 +387,7 @@ namespace Suntail
                 else
                 {
                     float ratio = 1.0f - (_skillThreeLeft / _skillThreeCool);
+                    if (ratio > 0.99f) ratio = 1.0f;
                     if (_skillThreeImage != null)
                         _skillThreeImage.fillAmount = ratio;
                 }
