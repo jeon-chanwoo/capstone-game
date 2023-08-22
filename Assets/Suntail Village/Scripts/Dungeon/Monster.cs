@@ -151,7 +151,6 @@ public class Monster : MonoBehaviour
             anim.SetTrigger("run");
         }
     }
-
     private void UpdateDie()
     {
         anim.Play("Die");
@@ -162,7 +161,6 @@ public class Monster : MonoBehaviour
         StartCoroutine(DestroyAfterDelay(5.0f));
         OpenDoor();
     }
-
     //공격할때 2개의 공격중 1개 랜덤공격
     private void ChooseRandomAttack()
     {

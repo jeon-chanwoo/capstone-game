@@ -14,7 +14,7 @@ public class MiniGameStart : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            boxCollider.isTrigger = false;
+            boxCollider.isTrigger = true;
         }
     }
 }
