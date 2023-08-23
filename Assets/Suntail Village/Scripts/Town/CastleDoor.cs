@@ -32,8 +32,10 @@ namespace Suntail
             if (!castleDoorOpen)
             {
                 _castleDoorAnimator.Play("OpenCastleDoor");
+                _castleDoorAudioSource.volume = 0.5f;
                 _castleDoorAudioSource.clip = castleDooropenSound;
                 _castleDoorAudioSource.Play();
+                
             }
         }
     }

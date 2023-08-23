@@ -99,10 +99,15 @@ namespace Suntail
         [SerializeField] private Text _debuffStack;
         private float _debuffCount = 0.0f;
 
+        [Header("CollSub")]
         private bool _isAnimatingSkill = false;
         private float _one = 1.0f;//쿨타임 도와주는 함수
         private float _countHP = 0.0f;
         private float _countMP = 0.0f;
+        
+        [Header("Sound")]        
+        
+
 
         [Header("GameOver")]
         [SerializeField] private Image blackScreenImage;
@@ -133,6 +138,17 @@ namespace Suntail
 
         [Tooltip("Add textures for this layer and add sounds to be played for this texture")]
         public List<GroundLayer> groundLayers = new List<GroundLayer>();
+
+        //idle update
+        public float animationSwitchTime = 15.0f;
+        private float lastInputTime;
+        private float lastAnimationSwitchTime;
+        private bool isPlayingAnimation = true;
+        public GameObject idleSword;
+        public GameObject idleshield;
+        public bool isMoving = false;
+
+
         #endregion
         #region camera
         [Header("Mouse Look")] 
@@ -194,6 +210,11 @@ namespace Suntail
                 _terrainLayers = _terrain.terrainData.terrainLayers;
             }
         }
+        private void Start()
+        {
+            lastInputTime = Time.time;
+            lastAnimationSwitchTime = Time.time;
+        }
 
         private void Update()
         {
@@ -210,12 +231,14 @@ namespace Suntail
             Movement();
             Jump();
             GroundChecker();
+            IdleUpdate();
             #endregion
             #region Camera
             MouseLook();
             CheckInput();
             Zoom();
             #endregion
+            
         }
         #region attack
         private void Attack()
@@ -781,6 +804,61 @@ namespace Suntail
                 {
                     _currentTexture = GetRendererTexture();
                 }
+            }
+        }
+        private void IdleUpdate()
+        {
+            if (Input.anyKey)
+            {
+                isMoving = true;
+                lastAnimationSwitchTime = Time.time;
+            }
+            else
+            {
+                isMoving = false;
+            }
+
+            if (isMoving)
+            {
+                lastInputTime = Time.time;//키입력이 뭐라도 있으면 시간 갱신
+            }
+
+            if(Time.time - lastAnimationSwitchTime > animationSwitchTime)//마지막 입력시간과의 차이가 3초이상 나게되면
+            {
+                ToggleAnimation();
+                PlayCurrentAnimation();
+                lastAnimationSwitchTime = Time.time;
+            }
+        }
+
+        private void ToggleAnimation()
+        {
+            isPlayingAnimation = !isPlayingAnimation;
+        }
+        private void PlayCurrentAnimation()
+        {
+            if (isPlayingAnimation)
+            {
+                _animator.Play("WAIT1");
+                idleSword.SetActive(false);
+                idleshield.SetActive(false);
+
+                StartCoroutine(DisableSkillMove(6.6f, () =>
+                {
+                    idleSword.SetActive(true);
+                    idleshield.SetActive(true);
+                }));
+            }
+            else
+            {
+                _animator.Play("WAIT2");
+                idleSword.SetActive(false);
+                idleshield.SetActive(false);
+                StartCoroutine(DisableSkillMove(5.2f, () =>
+                {
+                    idleSword.SetActive(true);
+                    idleshield.SetActive(true);
+                }));
             }
         }
         private void FixedUpdate()

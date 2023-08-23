@@ -13,14 +13,14 @@ public class GameOne : MonoBehaviour
     private int stepGameScaffoldCount = 0;
     public bool isGameCleared = false;
     private bool hasDecreasedScaffoldCount = false;
-    private GameObject player ;
+    private GameObject player;
     private CharacterController playerController;
     private Vector3 gameOneStartPosition;
     private GameObject _wall;
-
+    
     private void Start()
     {
-        _wall = GameObject.Find("Cube (3)");
+        _wall = GameObject.Find("MiniGame(Clone)/Game1/Base/Cube (3)");
         player = GameObject.FindGameObjectWithTag("Player");
         playerController = player.GetComponent<CharacterController>();
         gameOneStartPosition = new Vector3(2.8f, -4.0f, 62.8f);
@@ -95,10 +95,10 @@ public class GameOne : MonoBehaviour
     private void ForceMove()
     {
         BoxCollider boxCollider = _wall.GetComponent<BoxCollider>();
-        boxCollider.enabled = false;
         playerController.enabled = false;
         player.transform.position = gameOneStartPosition;
         playerController.enabled = true;
+        boxCollider.isTrigger = true;
 
     }
     public void SetAllScaffoldsDefault()
@@ -129,9 +129,4 @@ public class GameOne : MonoBehaviour
             scaffoldList.RemoveAt(randomIndex);
         }
     }
-
-    /*public void IncreaseStepGameScaffoldCount()
-    {
-        stepGameScaffoldCount++;
-    }*/
 }
