@@ -218,38 +218,112 @@ namespace Suntail
             #endregion
         }
         #region attack
-        private void DebuffTimeCheck()
+        private void Attack()
         {
-            if((Time.time - _lastDamageTime >= _debuffResetTime) && _debuffOn)
-               //현재시간-  데미지 입은시간차이가   5이상
+            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill)
             {
-                _debuffText.gameObject.SetActive(false);
-                _debuffOn = false;
-                _debuff = 0.0f;
-                _debuffCount = 0.0f;
-                _debuffButton.gameObject.SetActive(false);
-                _debuffImage.gameObject.SetActive(false);
-                _debuffStack.gameObject.SetActive(false);
-            }
-            else if(Time.time - _lastDamageTime < _debuffResetTime && _debuffOn)
-            {
-                _debuffRemainingTime = _debuffResetTime-(Time.time-_lastDamageTime);
-                _debuffStack.gameObject.SetActive(true);
-                _debuffButton.gameObject.SetActive(true);
-                _debuffImage.gameObject.SetActive(true);
-                _debuffText.gameObject.SetActive(true);
-                _debuffText.text = ((int)_debuffRemainingTime).ToString();
-                _debuffStack.text = ("x"+(int)_debuffCount).ToString();
 
-                float ratio = 1.0f - (_debuffRemainingTime / _debuffResetTime);
-                if (_debuffImage != null)
-                    _debuffImage.fillAmount = ratio;
+                if (attackCount == 0)
+                {
+                    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
+                        _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                    {
+                        _animator.Play("Attack1");
+                        CheckMonsterCollision();
+                        attackCount++;
+                        StartCoroutine(DisableInputForDuration(attackCoolDown));
+                    }
+                    else
+                    {
+                        _animator.Play("Attack1");
+                        CheckMonsterCollision();
+                        attackCount++;
+                        StartCoroutine(DisableInputForDuration(attackCoolDown));
+                    }
+
+                }
+
+                else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1") &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                {
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        _animator.Play("Attack2");
+                        CheckMonsterCollision();
+                        attackCount++;
+                        StartCoroutine(DisableInputForDuration(attackCoolDown));
+                    }
+                }
+
+                else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2") &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                {
+                    if (Input.GetMouseButton(0))
+                    {
+                        _animator.Play("Attack3");
+                        CheckMonsterCollision();
+                        attackCount = 0;
+                        isAttackInputDisabled = true;
+                        StartCoroutine(DisableInputForDuration(attackCoolDown));
+                    }
+                }
+                return;
+            }
+        }
+        private IEnumerator DisableInputForDuration(float delay)
+        {
+
+            yield return new WaitForSeconds(delay);
+            isAttackInputDisabled = false;
+        }
+        private void CheckMonsterCollision()
+        {
+            Collider weaponCollider = currentWeapon.GetComponent<Collider>();
+
+            // currentWeapon의 콜라이더가 없을 경우 처리
+            if (weaponCollider == null)
+            {
+                Debug.LogWarning("Weapon collider not found.");
+                return;
+            }
+
+            // 캐릭터 전방으로 레이캐스트 발사
+            Ray ray2 = new Ray(direction.transform.position + new Vector3(0.0f, 1.0f, 0.0f), direction.transform.forward);
+            Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);
+
+            RaycastHit[] hits;
+
+            // 레이캐스트로 충돌 검사
+            hits = Physics.RaycastAll(ray2, currentWeapon.attackRange);
+
+            foreach (RaycastHit hit in hits)
+            {
+                // 무기의 콜라이더와 몬스터의 콜라이더가 닿았을 때
+                if (hit.collider.CompareTag("Monster"))
+                {
+                    Monster monster = hit.collider.GetComponent<Monster>();
+                    if (monster != null)
+                    {
+                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
+                        monster.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
+                    }
+                }
+            }
+        }
+        private void AttackReset()
+        {
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("WAIT"))
+            {
+                attackCount = 0;
             }
         }
         private void Skill()
         {
             #region 스킬1
-            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded && _mp>=_skillOneMp)
+            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded && _mp >= _skillOneMp)
             {
                 if (_skillOneIsClicked && !_isSkillOneCoolDown && !_isAnimatingSkill)
                 {
@@ -298,7 +372,7 @@ namespace Suntail
             }
             #endregion
             #region 스킬2
-            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded && _mp >=_skillTwoMp)
+            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded && _mp >= _skillTwoMp)
             {
                 if (_skillTwoIsClicked && !_isAnimatingSkill)
                 {
@@ -347,7 +421,7 @@ namespace Suntail
             }
             #endregion
             #region 스킬3
-            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded && _mp>=_skillThreeMp)
+            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded && _mp >= _skillThreeMp)
             {
                 if (_skillThreeIsClicked && !_isSkillThreeCoolDown && !_isAnimatingSkill)
                 {
@@ -371,7 +445,7 @@ namespace Suntail
                         _isAnimatingSkill = false;
                     }));
 
-                    
+
                 }
 
             }
@@ -407,7 +481,7 @@ namespace Suntail
                     _hp -= _skillFourHp;
                     if (_hp < 0.0f)
                     {
-                         _hp = 0.0f;
+                        _hp = 0.0f;
                     }
                     _mp += _skillFourMp;
                     if (_mp > _maxMP)
@@ -455,39 +529,10 @@ namespace Suntail
             #endregion
 
         }
-        private void CheckMonsterCollision()
+        private IEnumerator DisableSkillMove(float delay, Action onComplete)
         {
-            Collider weaponCollider = currentWeapon.GetComponent<Collider>();
-
-            // currentWeapon의 콜라이더가 없을 경우 처리
-            if (weaponCollider == null)
-            {
-                Debug.LogWarning("Weapon collider not found.");
-                return;
-            }
-
-            // 캐릭터 전방으로 레이캐스트 발사
-            Ray ray2 = new Ray(direction.transform.position + new Vector3(0.0f, 1.0f, 0.0f), direction.transform.forward);
-            Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);
-
-            RaycastHit[] hits;
-
-            // 레이캐스트로 충돌 검사
-            hits = Physics.RaycastAll(ray2, currentWeapon.attackRange);
-
-            foreach (RaycastHit hit in hits)
-            {
-                // 무기의 콜라이더와 몬스터의 콜라이더가 닿았을 때
-                if (hit.collider.CompareTag("Monster"))
-                {
-                    Monster monster = hit.collider.GetComponent<Monster>();
-                    if (monster != null)
-                    {
-                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
-                        monster.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
-                    }
-                }
-            }
+            yield return new WaitForSeconds(delay);
+            onComplete?.Invoke();
         }
         private void CheckMonsterCollision(float _skillOnePower)
         {
@@ -523,79 +568,6 @@ namespace Suntail
                 }
             }
         }
-        private void AttackReset()
-        {
-            if (_animator.GetCurrentAnimatorStateInfo(0).IsName("WAIT"))
-            {
-                attackCount = 0;
-            }
-        }
-        private void Attack()
-        {
-            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill)
-            {
-                
-                if (attackCount == 0)
-                {
-                    if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
-                        _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
-                    {
-                        _animator.Play("Attack1");
-                        CheckMonsterCollision();
-                        attackCount++;
-                        StartCoroutine(DisableInputForDuration(attackCoolDown));
-                    }
-                    else
-                    {
-                        _animator.Play("Attack1");
-                        CheckMonsterCollision();
-                        attackCount++;
-                        StartCoroutine(DisableInputForDuration(attackCoolDown));
-                    }
-                   
-                }
-
-                else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1") &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        _animator.Play("Attack2");
-                        CheckMonsterCollision();
-                        attackCount++;
-                        StartCoroutine(DisableInputForDuration(attackCoolDown));
-                    }
-                }
-
-                else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2") &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
-                {
-                    if (Input.GetMouseButton(0))
-                    {
-                        _animator.Play("Attack3");
-                        CheckMonsterCollision();
-                        attackCount = 0;
-                        isAttackInputDisabled = true;
-                        StartCoroutine(DisableInputForDuration(attackCoolDown));
-                    }
-                }
-                return;
-            }
-        }
-        private IEnumerator DisableInputForDuration(float delay)
-        {
-            
-            yield return new WaitForSeconds(delay);
-            isAttackInputDisabled = false;
-        }
-        private IEnumerator DisableSkillMove(float delay, Action onComplete)
-        {
-            yield return new WaitForSeconds(delay);
-            onComplete?.Invoke();
-        }
         public void TakeDamage(float damageAmount) 
         {
             if (_hp > 0)
@@ -622,6 +594,34 @@ namespace Suntail
                 {
                     _hp -= _totalDamage - _defense;
                 }
+            }
+        }
+        private void DebuffTimeCheck()
+        {
+            if ((Time.time - _lastDamageTime >= _debuffResetTime) && _debuffOn)
+            //현재시간-  데미지 입은시간차이가   5이상
+            {
+                _debuffText.gameObject.SetActive(false);
+                _debuffOn = false;
+                _debuff = 0.0f;
+                _debuffCount = 0.0f;
+                _debuffButton.gameObject.SetActive(false);
+                _debuffImage.gameObject.SetActive(false);
+                _debuffStack.gameObject.SetActive(false);
+            }
+            else if (Time.time - _lastDamageTime < _debuffResetTime && _debuffOn)
+            {
+                _debuffRemainingTime = _debuffResetTime - (Time.time - _lastDamageTime);
+                _debuffStack.gameObject.SetActive(true);
+                _debuffButton.gameObject.SetActive(true);
+                _debuffImage.gameObject.SetActive(true);
+                _debuffText.gameObject.SetActive(true);
+                _debuffText.text = ((int)_debuffRemainingTime).ToString();
+                _debuffStack.text = ("x" + (int)_debuffCount).ToString();
+
+                float ratio = 1.0f - (_debuffRemainingTime / _debuffResetTime);
+                if (_debuffImage != null)
+                    _debuffImage.fillAmount = ratio;
             }
         }
         public void IncreaseHealth()
@@ -676,71 +676,9 @@ namespace Suntail
         }
         #endregion
         #region move
-        private void Jump()
-        {
-            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
-                        (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
-                            (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
-                                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                                    _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f) &&
-                                        !_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
-            {
-                _velocity.y = Mathf.Sqrt(jumpForce * 2f * -gravity);
-                _animator.SetBool("jump", true);
-                
-                StartCoroutine(JumpCoolTime(0.8f));
-            }
-        }
-        private IEnumerator JumpCoolTime(float cool)
-        {
-            _isJumping = true; // 점프 중임을 설정
-            yield return new WaitForSeconds(cool);
-
-            
-            _isJumping = false; // 점프 종료
-        }
-        private void FixedUpdate()
-        {
-            if (_characterController.isGrounded)
-            {
-                _isJumping = false;
-                _velocity.y += gravity * Time.fixedDeltaTime;
-            }
-            else
-            {
-                if (!_isJumping)
-                {
-                    _velocity.y += (gravity + 3.0f) * Time.fixedDeltaTime;
-                }
-            }
-            _animator.SetFloat("speed", _currentSpeed / 4.0f);
-            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
-            {
-                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
-
-                if (_nextFootstep >= 100f)
-                {
-                    {
-                        PlayFootstep();
-                        _nextFootstep = 0;
-                    }
-                }
-                _nextFootstep += (currentFootstepRate * walkSpeed);
-            }
-            else
-            {
-                _animator.SetFloat("speed", 0);
-            }
-
-            if (_characterController.isGrounded && _velocity.y < 0)
-            {
-                _animator.SetBool("jump", false);
-            }
-            _characterController.Move(_velocity * Time.fixedDeltaTime);
-        }
         private void Movement()
         {
-            if(!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
+            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
                 (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
                 (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
                 _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
@@ -806,6 +744,29 @@ namespace Suntail
                 _characterController.Move(_velocity * Time.deltaTime);
             }
         }
+        private void Jump()
+        {
+            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
+                        (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
+                            (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
+                                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
+                                    _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f) &&
+                                        !_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
+            {
+                _velocity.y = Mathf.Sqrt(jumpForce * 2f * -gravity);
+                _animator.SetBool("jump", true);
+                
+                StartCoroutine(JumpCoolTime(0.8f));
+            }
+        }
+        private IEnumerator JumpCoolTime(float cool)
+        {
+            _isJumping = true; // 점프 중임을 설정
+            yield return new WaitForSeconds(cool);
+
+            
+            _isJumping = false; // 점프 종료
+        }
         private void GroundChecker()
         {
             Ray checkerRay = new Ray(transform.position + (Vector3.up * 0.1f), Vector3.down);
@@ -821,6 +782,45 @@ namespace Suntail
                     _currentTexture = GetRendererTexture();
                 }
             }
+        }
+        private void FixedUpdate()
+        {
+            if (_characterController.isGrounded)
+            {
+                _isJumping = false;
+                _velocity.y += gravity * Time.fixedDeltaTime;
+            }
+            else
+            {
+                if (!_isJumping)
+                {
+                    _velocity.y += (gravity + 3.0f) * Time.fixedDeltaTime;
+                }
+            }
+            _animator.SetFloat("speed", _currentSpeed / 4.0f);
+            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
+            {
+                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
+
+                if (_nextFootstep >= 100f)
+                {
+                    {
+                        PlayFootstep();
+                        _nextFootstep = 0;
+                    }
+                }
+                _nextFootstep += (currentFootstepRate * walkSpeed);
+            }
+            else
+            {
+                _animator.SetFloat("speed", 0);
+            }
+
+            if (_characterController.isGrounded && _velocity.y < 0)
+            {
+                _animator.SetBool("jump", false);
+            }
+            _characterController.Move(_velocity * Time.fixedDeltaTime);
         }
         #endregion
         #region camera
@@ -892,7 +892,6 @@ namespace Suntail
                 }
             }
         }
-
         private float[] GetTerrainTexturesArray(Vector3 controllerPosition)
         {
             _terrain = Terrain.activeTerrain;
