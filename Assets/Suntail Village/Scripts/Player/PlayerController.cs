@@ -710,6 +710,7 @@ namespace Suntail
             yield return new WaitForSeconds(3.0f);
             gameOverText.CrossFadeAlpha(0,1.0f,false);
             yield return null;
+            isGameOver = false;
             SceneManager.LoadScene("GameStart");
         }
         #endregion
