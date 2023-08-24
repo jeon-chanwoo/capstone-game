@@ -63,6 +63,9 @@ namespace Suntail
         [SerializeField] private Button _skillTwoButton;
         [SerializeField] private Image _skillTwoImage;
         [SerializeField] private Text _skillTwoText;
+        public AudioClip _defend;
+        [SerializeField] private AudioSource defendSound;
+        public bool _isDefendSound = false;
 
         [Header("Skill Three")]
         private bool _skillThreeIsClicked = true;
@@ -147,6 +150,10 @@ namespace Suntail
         public GameObject idleSword;
         public GameObject idleshield;
         public bool isMoving = false;
+        public bool isAnimation = false;
+
+        //GameOver
+        private bool isGameOver = false;
 
 
         #endregion
@@ -218,39 +225,42 @@ namespace Suntail
 
         private void Update()
         {
-            #region Attack
-            Attack();
-            Skill();
-            AttackReset();
-            DebuffTimeCheck();
-            IncreaseHealth();
-            IncreaseMp();
-            Die();
-            #endregion
-            #region move
-            Movement();
-            Jump();
-            GroundChecker();
-            IdleUpdate();
-            #endregion
-            #region Camera
-            MouseLook();
-            CheckInput();
-            Zoom();
-            #endregion
-            
+            if (!isGameOver)
+            {
+                #region Attack
+                Attack();
+                Skill();
+                AttackReset();
+                DebuffTimeCheck();
+                IncreaseHealth();
+                IncreaseMp();
+                Die();
+                #endregion
+                #region move
+                Movement();
+                Jump();
+                GroundChecker();
+                IdleUpdate();
+                #endregion
+                #region Camera
+                MouseLook();
+                CheckInput();
+                Zoom();
+                #endregion
+            }
+
+
         }
         #region attack
         private void Attack()
         {
-            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill)
+            if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill && !isAnimation)
             {
-
                 if (attackCount == 0)
                 {
                     if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f && !isAttackInputDisabled)
                     {
                         _animator.Play("Attack1");
                         CheckMonsterCollision();
@@ -269,7 +279,7 @@ namespace Suntail
 
                 else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1") &&
                          _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f && !isAttackInputDisabled)
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
@@ -282,7 +292,7 @@ namespace Suntail
 
                 else if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2") &&
                          _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f && !isAttackInputDisabled)
+                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f && !isAttackInputDisabled)
                 {
                     if (Input.GetMouseButton(0))
                     {
@@ -346,7 +356,7 @@ namespace Suntail
         private void Skill()
         {
             #region 스킬1
-            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded && _mp >= _skillOneMp)
+            if (Input.GetKeyDown(KeyCode.Alpha1) && _characterController.isGrounded && _mp >= _skillOneMp && !isAnimation)
             {
                 if (_skillOneIsClicked && !_isSkillOneCoolDown && !_isAnimatingSkill)
                 {
@@ -395,8 +405,13 @@ namespace Suntail
             }
             #endregion
             #region 스킬2
-            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded && _mp >= _skillTwoMp)
+            if (Input.GetKey(KeyCode.Alpha2) && _characterController.isGrounded && _mp >= _skillTwoMp && !isAnimation)
             {
+                if (!_isDefendSound)
+                {
+                    _isDefendSound = true;
+                    defendSound.PlayOneShot(_defend);
+                }
                 if (_skillTwoIsClicked && !_isAnimatingSkill)
                 {
                     _mp -= _skillTwoMp;
@@ -410,6 +425,7 @@ namespace Suntail
             }
             if (Input.GetKeyUp(KeyCode.Alpha2) && _skillTwoLeft == 0 && _animator.GetCurrentAnimatorStateInfo(0).IsName("Defend"))
             {
+                _isDefendSound = false;
                 walkSpeed = 4.0f;
                 _isAnimatingSkill = false;
                 _isJumping = false;
@@ -444,7 +460,7 @@ namespace Suntail
             }
             #endregion
             #region 스킬3
-            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded && _mp >= _skillThreeMp)
+            if (Input.GetKeyDown(KeyCode.Alpha3) && _characterController.isGrounded && _mp >= _skillThreeMp && !isAnimation)
             {
                 if (_skillThreeIsClicked && !_isSkillThreeCoolDown && !_isAnimatingSkill)
                 {
@@ -497,7 +513,7 @@ namespace Suntail
             }
             #endregion
             #region 스킬4
-            if (Input.GetKeyDown(KeyCode.Alpha4) && _characterController.isGrounded)
+            if (Input.GetKeyDown(KeyCode.Alpha4) && _characterController.isGrounded && !isAnimation)
             {
                 if (_skillFourIsClicked && !_isSkillFourCoolDown && !_isAnimatingSkill)
                 {
@@ -675,38 +691,33 @@ namespace Suntail
         }
         public void Die()
         {
-            if(_hp<=0)
+            if(_hp<=0 && !isGameOver)
             {
-                Input.ResetInputAxes();
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-                blackScreenImage.CrossFadeAlpha(1, 3, false);//다시 보이게
-                gameOverText.gameObject.SetActive(true);
+                isGameOver = true;
+                _animator.Play("Die");
                 StartCoroutine(gameOver());
-                StartCoroutine(goGameStart());
             }
         }
+
         private IEnumerator gameOver()
         {
+            gameOverText.gameObject.SetActive(true);
+            yield return null;
             gameOverText.CrossFadeAlpha(0,0, false);
-            yield return new WaitForSeconds(0.1f);
-            gameOverText.CrossFadeAlpha(1,3, false);
-        }
-        private IEnumerator goGameStart()
-        {
-            yield return new WaitForSeconds(4.0f);
+            yield return null;
+            blackScreenImage.CrossFadeAlpha(1,3.0f,false);
+            gameOverText.CrossFadeAlpha(1,3.0f, false);
+            yield return new WaitForSeconds(3.0f);
+            gameOverText.CrossFadeAlpha(0,1.0f,false);
+            yield return null;
             SceneManager.LoadScene("GameStart");
         }
         #endregion
         #region move
         private void Movement()
         {
-            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) ||
-                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) ||
-                (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
-                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
-                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f
-                ))
+            if (!(((_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1")) || (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2")) || (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))) &&
+                _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f && _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f) && !isAnimation)
             {
                 if (_characterController.isGrounded && _velocity.y < 0)
                 {
@@ -839,66 +850,73 @@ namespace Suntail
         {
             if (isPlayingAnimation)
             {
+                isAnimation = true;
                 _animator.Play("WAIT1");
                 idleSword.SetActive(false);
                 idleshield.SetActive(false);
 
-                StartCoroutine(DisableSkillMove(6.6f, () =>
+                StartCoroutine(DisableSkillMove(5.5f, () =>
                 {
+                    isAnimation=false;
                     idleSword.SetActive(true);
                     idleshield.SetActive(true);
                 }));
             }
             else
             {
+                isAnimation = true;
                 _animator.Play("WAIT2");
                 idleSword.SetActive(false);
                 idleshield.SetActive(false);
-                StartCoroutine(DisableSkillMove(5.2f, () =>
+                StartCoroutine(DisableSkillMove(4.7f, () =>
                 {
                     idleSword.SetActive(true);
                     idleshield.SetActive(true);
+                    isAnimation = false;
                 }));
             }
         }
         private void FixedUpdate()
         {
-            if (_characterController.isGrounded)
+            if (!(_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack1") || _animator.GetCurrentAnimatorStateInfo(0).IsName("Attack2") || _animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3")))
             {
-                _isJumping = false;
-                _velocity.y += gravity * Time.fixedDeltaTime;
-            }
-            else
-            {
-                if (!_isJumping)
+                if (_characterController.isGrounded)
                 {
-                    _velocity.y += (gravity + 3.0f) * Time.fixedDeltaTime;
+                    _isJumping = false;
+                    _velocity.y += gravity * Time.fixedDeltaTime;
                 }
-            }
-            _animator.SetFloat("speed", _currentSpeed / 4.0f);
-            if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
-            {
-                float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
-
-                if (_nextFootstep >= 100f)
+                else
                 {
+                    if (!_isJumping)
                     {
-                        PlayFootstep();
-                        _nextFootstep = 0;
+                        _velocity.y += (gravity + 3.0f) * Time.fixedDeltaTime;
                     }
                 }
-                _nextFootstep += (currentFootstepRate * walkSpeed);
-            }
-            else
-            {
-                _animator.SetFloat("speed", 0);
-            }
+                _animator.SetFloat("speed", _currentSpeed / 4.0f);
+                if (_characterController.isGrounded && (_horizontalMovement != 0 || _verticalMovement != 0))
+                {
+                    float currentFootstepRate = (_isRunning ? runningFootstepRate : footstepRate);
 
-            if (_characterController.isGrounded && _velocity.y < 0)
-            {
-                _animator.SetBool("jump", false);
+                    if (_nextFootstep >= 100f)
+                    {
+                        {
+                            PlayFootstep();
+                            _nextFootstep = 0;
+                        }
+                    }
+                    _nextFootstep += (currentFootstepRate * walkSpeed);
+                }
+                else
+                {
+                    _animator.SetFloat("speed", 0);
+                }
+
+                if (_characterController.isGrounded && _velocity.y < 0)
+                {
+                    _animator.SetBool("jump", false);
+                }
+                _characterController.Move(_velocity * Time.fixedDeltaTime);
             }
-            _characterController.Move(_velocity * Time.fixedDeltaTime);
         }
         #endregion
         #region camera

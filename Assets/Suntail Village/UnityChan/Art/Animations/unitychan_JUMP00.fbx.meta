@@ -1993,7 +1993,14 @@ ModelImporter:
           preInfinity: 2
           postInfinity: 2
           rotationOrder: 4
-      events: []
+      events:
+      - time: 0
+        functionName: Sound
+        data: JUMP
+        objectReferenceParameter: {fileID: 11500000, guid: 5cc0598da17f00f4d9d7b26e23157bc9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
