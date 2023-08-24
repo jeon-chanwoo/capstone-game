@@ -705,11 +705,11 @@ namespace Suntail
             yield return null;
             gameOverText.CrossFadeAlpha(0,0, false);
             yield return null;
-            blackScreenImage.CrossFadeAlpha(1,3.0f,false);
-            gameOverText.CrossFadeAlpha(1,3.0f, false);
+            blackScreenImage.CrossFadeAlpha(1,4.0f,false);
+            gameOverText.CrossFadeAlpha(1,4.0f, false);
             yield return new WaitForSeconds(3.0f);
             gameOverText.CrossFadeAlpha(0,1.0f,false);
-            yield return null;
+            yield return new WaitForSeconds(2.0f);
             isGameOver = false;
             SceneManager.LoadScene("GameStart");
         }

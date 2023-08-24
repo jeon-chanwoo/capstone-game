@@ -8,12 +8,14 @@ public class StageStart : MonoBehaviour
     public GameObject game1Prefab;
     public GameObject monster1Prefab;
     public int stageCount=0;
+    public BackGroundMusic backGroundMusicScript;// 백그라운드 뮤직 스크립트
 
     private void OnTriggerExit(Collider other)
     {
         
         if (other.CompareTag("Player"))
         {
+            
             stageCount++;
             if (otherObjectAnimator1 != null && otherObjectAnimator2 != null && otherObjectAnimator3 != null)
             {
@@ -32,6 +34,7 @@ public class StageStart : MonoBehaviour
                 else if (monster1Prefab != null)
                 {
                     Instantiate(monster1Prefab, new Vector3(2.1f, 0.1f, 0f), Quaternion.identity);
+                    backGroundMusicScript.PlayBossMusic();//보스 음악 재생
                 }
                 else return;
             }

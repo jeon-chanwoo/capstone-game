@@ -347,6 +347,7 @@ MonoBehaviour:
   enterSoundSource: {fileID: 1228018914}
   backGroundMusic: {fileID: 8300000, guid: ce3637fd5b5b5b74f8aaa2fb3766abbc, type: 3}
   backGroundMusicSource: {fileID: 1228018914}
+  bossMusic: {fileID: 8300000, guid: 8803005941e0537449070e657b375411, type: 3}
 --- !u!82 &1228018914
 AudioSource:
   m_ObjectHideFlags: 0
@@ -560,6 +561,18 @@ PrefabInstance:
       propertyPath: game1Prefab
       value: 
       objectReference: {fileID: 269409658499076080, guid: bbb0e58f14967f44c806b26979180a4f, type: 3}
+    - target: {fileID: 1830398209587577595, guid: 61ee9435ffdb23c42905bf42a19f0b8f, type: 3}
+      propertyPath: game1Prefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1830398209587577595, guid: 61ee9435ffdb23c42905bf42a19f0b8f, type: 3}
+      propertyPath: monster1Prefab
+      value: 
+      objectReference: {fileID: 5057192832634694431, guid: 348267f7da592ca4f829af575ece8bf3, type: 3}
+    - target: {fileID: 1830398209587577595, guid: 61ee9435ffdb23c42905bf42a19f0b8f, type: 3}
+      propertyPath: backGroundMusicScript
+      value: 
+      objectReference: {fileID: 1228018913}
     - target: {fileID: 2334646562360175479, guid: 61ee9435ffdb23c42905bf42a19f0b8f, type: 3}
       propertyPath: m_RootOrder
       value: 3

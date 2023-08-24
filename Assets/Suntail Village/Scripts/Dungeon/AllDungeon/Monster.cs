@@ -16,6 +16,7 @@ public class Monster : MonoBehaviour
     NavMeshAgent agent;
     public Animator anim;
     private bool isAttacking = false;
+    public BackGroundMusic backGroundMusicScript;// 백그라운드 뮤직 스크립트
 
 
     enum State
@@ -34,6 +35,7 @@ public class Monster : MonoBehaviour
         SetHealth(200.0f);
         state = State.Idle;
         agent = GetComponent<NavMeshAgent>();
+        backGroundMusicScript = GameObject.Find("Controller Camera").GetComponent<BackGroundMusic>();
     }
     private void Update()
     {
@@ -158,8 +160,9 @@ public class Monster : MonoBehaviour
         Text _text = stageClearTextTransform.GetComponent<Text>();
         _text.gameObject.SetActive(true);
         _text.CrossFadeAlpha(0, 5f, false);
-        StartCoroutine(DestroyAfterDelay(5.0f));
+        StartCoroutine(DestroyAfterDelay(3.0f));
         OpenDoor();
+        backGroundMusicScript.StopBossMusic();
     }
     //공격할때 2개의 공격중 1개 랜덤공격
     private void ChooseRandomAttack()
