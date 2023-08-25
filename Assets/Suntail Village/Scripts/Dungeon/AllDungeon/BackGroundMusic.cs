@@ -62,4 +62,18 @@ public class BackGroundMusic : MonoBehaviour
         backGroundMusicSource.clip = backGroundMusic; // 원래 백그라운드 뮤직으로 클립 변경
         backGroundMusicSource.Play();
     }
+    public void StartEnterMusic()
+    {
+        backGroundMusicSource.Stop();
+        backGroundMusicSource.clip = enterSound;
+        backGroundMusicSource.Play();
+        StartCoroutine(EnterSoundTime(3.2f));
+    }
+
+    private IEnumerator EnterSoundTime(float time)
+    {
+        yield return new WaitForSeconds(time);
+        backGroundMusicSource.clip = backGroundMusic;
+        backGroundMusicSource.Play();
+    }
 }

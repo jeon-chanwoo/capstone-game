@@ -18,11 +18,13 @@ public class OpenDoor : MonoBehaviour
     public Animator otherObjectAnimator1; //입장문
     public Animator otherObjectAnimator2; //보스문
     public Animator otherObjectAnimator3; //보스문
+    private BackGroundMusic backGroundMusic;
 
     public int stageCount = 0;
 
     private void Start()
     {
+        backGroundMusic = FindObjectOfType<BackGroundMusic>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerController = player.GetComponent<CharacterController>();
         stageStartPosition = new Vector3(2.5f, -8.5f, 85.0f);
@@ -35,6 +37,7 @@ public class OpenDoor : MonoBehaviour
             stageCount++;
             blackScreenImage.CrossFadeAlpha(1, 0, false);//다시보이게
             blackScreenText.gameObject.SetActive(true);//올라가는중
+            backGroundMusic.StartEnterMusic();
             StartCoroutine(TransitionAnimation());
             ForceMove();
             if (otherObjectAnimator1 != null && otherObjectAnimator2 != null && otherObjectAnimator3 != null)
@@ -57,8 +60,8 @@ public class OpenDoor : MonoBehaviour
     }
     private IEnumerator TransitionAnimation()
     {
+        yield return new WaitForSeconds(4.0f);
         blackScreenImage.CrossFadeAlpha(0, TextDuration, false);
-        yield return new WaitForSeconds(0.1f);
         blackScreenText.CrossFadeAlpha(0, TextDuration, false);
     }
     private void ForceMove()

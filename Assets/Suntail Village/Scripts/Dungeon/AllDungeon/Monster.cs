@@ -17,6 +17,10 @@ public class Monster : MonoBehaviour
     public Animator anim;
     private bool isAttacking = false;
     public BackGroundMusic backGroundMusicScript;// 백그라운드 뮤직 스크립트
+    private AudioSource audioSource;
+    public AudioClip basicAttack;
+    public AudioClip _die;
+    public AudioClip _run;
 
 
     enum State
@@ -32,6 +36,7 @@ public class Monster : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         SetHealth(200.0f);
         state = State.Idle;
         agent = GetComponent<NavMeshAgent>();
@@ -134,8 +139,9 @@ public class Monster : MonoBehaviour
     private void UpdateGetHit()
     {
 
-        if (currentHealth % 10 == 0)
+        if (currentHealth % 11 == 0)
             anim.Play("Get Hit");
+            
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
         if (distance <= transAttack)
@@ -274,7 +280,6 @@ public class Monster : MonoBehaviour
     public void TakeDamage(float damageAmount)
     {
         currentHealth -= damageAmount;
-        Debug.Log(currentHealth + "/" + maxHealth);
         if (currentHealth <= 0)
         {
             currentHealth = 0;
@@ -286,4 +291,19 @@ public class Monster : MonoBehaviour
         }
     }
 
+    public void Sound(string animationName)
+    {
+        if (animationName == "Basic Attack")
+        {
+            audioSource.PlayOneShot(basicAttack);
+        }
+        else if (animationName == "Die")
+        {
+            audioSource.PlayOneShot(_die);
+        }
+        else if (animationName == "Run")
+        {
+            audioSource.PlayOneShot(_run);
+        }
+    }
 }
