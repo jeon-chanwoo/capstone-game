@@ -11,6 +11,7 @@ TagManager:
   - Scaffold
   - broke
   - Monster
+  - MiniGameTwo
   layers:
   - Default
   - TransparentFX

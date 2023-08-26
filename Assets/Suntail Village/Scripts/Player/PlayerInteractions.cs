@@ -46,7 +46,9 @@ namespace Suntail
         [Tooltip("Text when the door can be closed")]
         [SerializeField] private string doorCloseText;
         [SerializeField] private string castleDoorOpenText;
-
+        [Tooltip("Text when the minigame Two")]
+        [SerializeField] private string rotationText;
+        [SerializeField] private string miniGameTwoTag = "MiniGameTwo";
         //Private variables.
         private PhysicsObject _physicsObject;
         private PhysicsObject _currentlyPickedUpObject;
@@ -60,6 +62,7 @@ namespace Suntail
         private CharacterController _characterController;
         [SerializeField] public GameObject _character;
         private CastleDoor _lookCastleDoor;
+        private MiniGameTwo _lookMiniGameTwo;
         
 
 
@@ -104,7 +107,7 @@ namespace Suntail
                         _lookDoor.PlayDoorAnimation();
                     }
                 }
-                if (interactionHit.collider.CompareTag(castleDoorTag))
+                else if (interactionHit.collider.CompareTag(castleDoorTag))
                 {
                     _lookCastleDoor = interactionHit.collider.gameObject.GetComponentInChildren<CastleDoor>();
                     ShowCastleDoorUI();
@@ -113,12 +116,22 @@ namespace Suntail
                         _lookCastleDoor.PlayCastleDoorAnimation();
                     }
                 }
+                else if (interactionHit.collider.CompareTag(miniGameTwoTag))
+                {
+                    _lookMiniGameTwo = interactionHit.collider.gameObject.GetComponentInChildren<MiniGameTwo>();
+                    ShowMiniGameTwoUI();
+                    if( Input.GetKeyDown(interactionKey))
+                    {
+                        _lookMiniGameTwo.PlayMiniGameTwo();
+                    }
+                }
             }
             else
             {
                 _lookCastleDoor = null;
                 _lookDoor = null;
                 _lookObject = null;
+                _lookMiniGameTwo = null;
                 uiPanel.gameObject.SetActive(false);
             }
 
@@ -216,6 +229,15 @@ namespace Suntail
             if (!_lookCastleDoor.castleDoorOpen)
             {
                 panelText.text = castleDoorOpenText;
+            }
+        }
+        private void ShowMiniGameTwoUI()
+        {
+            uiPanel.gameObject.SetActive(true);
+
+            if (!_lookMiniGameTwo.gameClear)
+            {
+                panelText.text = rotationText;
             }
         }
 

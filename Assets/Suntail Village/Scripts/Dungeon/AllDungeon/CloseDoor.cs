@@ -7,6 +7,7 @@ public class StageStart : MonoBehaviour
     public Animator otherObjectAnimator3;
     public GameObject game1Prefab;
     public GameObject monster1Prefab;
+    public GameObject game2Prefab;
     public int stageCount=0;
     public BackGroundMusic backGroundMusicScript;// 백그라운드 뮤직 스크립트
 
@@ -39,6 +40,13 @@ public class StageStart : MonoBehaviour
                 else return;
             }
             #endregion
+            if(stageCount == 2)
+            {
+                if (game2Prefab != null)
+                {
+                    Instantiate(game2Prefab, new Vector3(2.45f,-4.79f,52.41f), Quaternion.Euler(0f, 180f, 180f));
+                }
+            }
         }
 
     }
