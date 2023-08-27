@@ -338,10 +338,16 @@ namespace Suntail
                 if (hit.collider.CompareTag("Monster"))
                 {
                     Monster monster = hit.collider.GetComponent<Monster>();
+                    MonsterTwo monsterTwo = hit.collider.GetComponent<MonsterTwo>();
                     if (monster != null)
                     {
                         // 무기와 몬스터 충돌 시 몬스터의 체력 감소
                         monster.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
+                    }
+                    if (monsterTwo != null)
+                    {
+                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
+                        monsterTwo.TakeDamage(_atkPower); // 무기의 공격력만큼 체력 감소시키도록 수정
                     }
                 }
             }
@@ -599,10 +605,16 @@ namespace Suntail
                 if (hit.collider.CompareTag("Monster"))
                 {
                     Monster monster = hit.collider.GetComponent<Monster>();
+                    MonsterTwo monsterTwo = hit.collider.GetComponent<MonsterTwo>();
                     if (monster != null)
                     {
                         // 무기와 몬스터 충돌 시 몬스터의 체력 감소
                         monster.TakeDamage(_skillOnePower); // 무기의 공격력만큼 체력 감소시키도록 수정
+                    }
+                    if (monsterTwo != null)
+                    {
+                        // 무기와 몬스터 충돌 시 몬스터의 체력 감소
+                        monsterTwo.TakeDamage(_skillOnePower); // 무기의 공격력만큼 체력 감소시키도록 수정
                     }
                 }
             }
