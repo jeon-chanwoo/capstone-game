@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MiniGameTwo : MonoBehaviour
 {
@@ -32,7 +33,6 @@ public class MiniGameTwo : MonoBehaviour
     }
     public void GameClear()
     {
-        //üũ~
           if ((Mathf.Floor(leftCube.transform.rotation.eulerAngles.y) == 0) &&
              (Mathf.Floor(rightCube.transform.rotation.eulerAngles.y) == 0) &&
             (Mathf.Floor(centerCube.transform.rotation.eulerAngles.y) == 0) && !endGame)
@@ -40,15 +40,16 @@ public class MiniGameTwo : MonoBehaviour
 
             gameClear = true;
             endGame = true;
+            Transform gameClearTextTransform = Camera.main.transform.Find("UI/MiniGameClear");
+            Text _text = gameClearTextTransform.GetComponent<Text>();
+            _text.CrossFadeAlpha(1, 0, false);
+            _text.CrossFadeAlpha(0, 5f, false);
 
             BoxCollider boxCollider = _wall.GetComponent<BoxCollider>();
             if(boxCollider != null)
             {
                 boxCollider.enabled = false;
             }
-            Debug.Log(gameClear);
-            Debug.Log(endGame);
-            Debug.Log(boxCollider.enabled);
         }
     }
     public void PlayMiniGameTwo()

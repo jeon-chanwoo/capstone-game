@@ -167,7 +167,6 @@ public class Monster : MonoBehaviour
         _text.gameObject.SetActive(true);
         _text.CrossFadeAlpha(0, 5f, false);
         StartCoroutine(DestroyAfterDelay(3.0f));
-        OpenDoor();
         backGroundMusicScript.StopBossMusic();
     }
     //공격할때 2개의 공격중 1개 랜덤공격
@@ -274,6 +273,7 @@ public class Monster : MonoBehaviour
     private IEnumerator DestroyAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        OpenDoor();
         Destroy(agent.gameObject);
     }
     // 데미지를 입었을 때 호출되는 메서드

@@ -9,11 +9,9 @@ public class OpenDoor : MonoBehaviour
     [SerializeField] private Image blackScreenImage;
     [SerializeField] private Text blackScreenText;
     private GameObject player;
-    private GameObject game1;
+    private GameObject game;
     private CharacterController playerController;
     private Vector3 stageStartPosition;
-    [SerializeField] private GameOne gameOne;
-    //[SerializeField] private float blackScreenDuration = 4f;
     [SerializeField] private float TextDuration = 3f;
     public Animator otherObjectAnimator1; //입장문
     public Animator otherObjectAnimator2; //보스문
@@ -48,11 +46,16 @@ public class OpenDoor : MonoBehaviour
             }
 
 
-            #region 1stage
+            #region stage
             if (stageCount == 1)
             {
-                game1 = GameObject.Find("MiniGame(Clone)");
-                Destroy(game1.gameObject);
+                game = GameObject.Find("MiniGame(Clone)");
+                Destroy(game.gameObject);
+            }
+            if (stageCount == 2)
+            {
+                game = GameObject.Find("MiniGame2(Clone)");
+                Destroy(game.gameObject);
             }
             #endregion
         }

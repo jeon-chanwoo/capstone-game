@@ -22,12 +22,14 @@ public class MonsterTwo : MonoBehaviour
     public AudioClip basicAttack;
     public AudioClip _die;
     public AudioClip _run;
+    public AudioClip _scream;
     public bool isDeathAttack = false;
     public bool firstDeathAttack = false;
     public bool secondDeathAttack = false;
     public bool thirdDeathAttack = false;
     public bool fourthDeathAttack = false;
     public ParticleSystem _meteor;
+    float desireVolum = 0.5f;
     enum State
     {
         Idle,
@@ -183,7 +185,7 @@ public class MonsterTwo : MonoBehaviour
         _text.CrossFadeAlpha(1, 0, false);
         _text.CrossFadeAlpha(0, 5f, false);
         StartCoroutine(DestroyAfterDelay(3.0f));
-        OpenDoor();
+        
         backGroundMusicScript.StopBossMusic();
     }
     public void Attack1()
@@ -195,7 +197,7 @@ public class MonsterTwo : MonoBehaviour
                 PlayerController player = target.GetComponent<PlayerController>();
                 if (player != null && !isAttacking)
                 {
-                     player.TakeDamage(1.0f);
+                     player.TakeDamage(2.0f);
                      isAttacking = true;
                      StartCoroutine(ResetAttack(1.3f));
                 }
@@ -225,7 +227,6 @@ public class MonsterTwo : MonoBehaviour
                 _text.CrossFadeAlpha(1, 0, false);
                 _text.CrossFadeAlpha(0, 2f, false);
                 _meteor.gameObject.SetActive(true);
-                //mainModule.playOnAwake = true;
                 anim.Play("Scream");
                 StartCoroutine(DeathAttack(4.0f));
             }
@@ -279,7 +280,7 @@ public class MonsterTwo : MonoBehaviour
         PlayerController player = target.GetComponent<PlayerController>();
 
         _meteor.Play();
-        yield return new WaitForSeconds(1.4f);
+        yield return new WaitForSeconds(1.2f);
         player.TakeDamage(60.0f);
         _meteor.Stop();
 
@@ -299,7 +300,7 @@ public class MonsterTwo : MonoBehaviour
         if (currentHealth > 0 && currentHealth < maxHealth)
         {
             count += healthIncreaseRate * Time.deltaTime;
-            if (count > 1.3f)
+            if (count > 1.0f)
             {
                 count = 0;
                 currentHealth += healthIncreaseRate;
@@ -321,6 +322,7 @@ public class MonsterTwo : MonoBehaviour
     private IEnumerator DestroyAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        OpenDoor();
         Destroy(agent.gameObject);
     }
     // 데미지를 입었을 때 호출되는 메서드
@@ -351,6 +353,11 @@ public class MonsterTwo : MonoBehaviour
         else if (animationName == "Run")
         {
             audioSource.PlayOneShot(_run);
+        }
+        else if (animationName == "Scream")
+        {
+            audioSource.volume = desireVolum;
+            audioSource.PlayOneShot(_scream);
         }
     }
 }
