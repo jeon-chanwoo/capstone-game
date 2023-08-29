@@ -57,6 +57,11 @@ public class OpenDoor : MonoBehaviour
                 game = GameObject.Find("MiniGame2(Clone)");
                 Destroy(game.gameObject);
             }
+            if (stageCount == 3)
+            {
+                game = GameObject.Find("MiniGame3(Clone)");
+                Destroy(game.gameObject);
+            }
             #endregion
         }
 

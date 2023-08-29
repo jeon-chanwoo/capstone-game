@@ -43,8 +43,6 @@ public class MonsterTwo : MonoBehaviour
 
     private void Start()
     {
-        //ParticleSystem.MainModule mainModule = _meteor.main;
-        //mainModule.simulationSpeed = 0.5f;
         audioSource = GetComponent<AudioSource>();
         SetHealth(300.0f);
         state = State.Idle;
