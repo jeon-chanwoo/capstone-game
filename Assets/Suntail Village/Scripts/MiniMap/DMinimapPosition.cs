@@ -75,8 +75,4 @@ public class DMinimapPosition : MonoBehaviour
             _characterSpot.transform.localScale = newScale;
         }
     }
-
-
-    //10~75 65의 구간 50으로 나눔 1.3
-    //4~16 12의 구간 9.2로나눔 1.3
 }

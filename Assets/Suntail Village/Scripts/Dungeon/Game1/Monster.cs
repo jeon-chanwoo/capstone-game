@@ -98,6 +98,7 @@ public class Monster : MonoBehaviour
         }
         else if (distance <= transAttack)
         {
+            anim.ResetTrigger("run");
             state = State.Attack;
             ChooseRandomAttack();
         }
@@ -108,6 +109,7 @@ public class Monster : MonoBehaviour
         float distance = Vector3.Distance(transform.position, target.transform.position);
         if (distance <= transAttack)
         {
+            anim.ResetTrigger("run");
             state = State.Attack;
             ChooseRandomAttack();
         }
@@ -132,15 +134,20 @@ public class Monster : MonoBehaviour
         }
         else if (distance <= transAttack)
         {
-
+            anim.ResetTrigger("run");
             ChooseRandomAttack();
         }
     }
     private void UpdateGetHit()
     {
+        anim.ResetTrigger("run");
 
         if (currentHealth % 11 == 0)
+        {
+            
             anim.Play("Get Hit");
+        }
+            
             
 
         float distance = Vector3.Distance(transform.position, target.transform.position);
@@ -148,6 +155,7 @@ public class Monster : MonoBehaviour
         {
             if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.9f)
             {
+                anim.ResetTrigger("run");
                 state = State.Attack;
                 ChooseRandomAttack();
             }
@@ -161,6 +169,7 @@ public class Monster : MonoBehaviour
     }
     private void UpdateDie()
     {
+        anim.ResetTrigger("run");
         anim.Play("Die");
         Transform stageClearTextTransform = Camera.main.transform.Find("UI/StageClear");
         Text _text = stageClearTextTransform.GetComponent<Text>();
@@ -180,10 +189,12 @@ public class Monster : MonoBehaviour
         switch (randomAttack)
         {
             case 1:
+                anim.ResetTrigger("run");
                 anim.SetTrigger("attack1");
                 Attack1();
                 break;
             case 2:
+                anim.ResetTrigger("run");
                 anim.SetTrigger("attack2");
                 Attack2();
                 break;
@@ -204,7 +215,7 @@ public class Monster : MonoBehaviour
                 if ((player != null))
                     if (!isAttacking)
                     {
-                        player.TakeDamage(5.0f);
+                        player.TakeDamage(2.0f);
                         isAttacking = true;
                         StartCoroutine(ResetAttack(1.43f));
                     }
@@ -223,7 +234,7 @@ public class Monster : MonoBehaviour
                 {
                     if (!isAttacking)
                     {
-                        player.TakeDamage(3.0f);
+                        player.TakeDamage(1.0f);
                         isAttacking = true;
                         StartCoroutine(ResetAttack(1.1f));
                     }
@@ -251,7 +262,7 @@ public class Monster : MonoBehaviour
         if (currentHealth > 0 && currentHealth < maxHealth)
         {
             count += healthIncreaseRate * Time.deltaTime;
-            if (count > 0.8f)
+            if (count > 1.5f)
             {
                 count = 0;
                 currentHealth += healthIncreaseRate;

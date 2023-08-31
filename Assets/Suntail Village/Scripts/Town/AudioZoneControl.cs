@@ -1,10 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Audio;
 
-/*Script, that changes the snapshot 
-depending on the player's position 
-outside or inside trigger zone*/
-
 namespace Suntail
 {
     public class AudioZoneControl : MonoBehaviour

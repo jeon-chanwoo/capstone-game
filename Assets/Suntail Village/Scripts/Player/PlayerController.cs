@@ -92,7 +92,7 @@ namespace Suntail
         private bool _debuffOn = false;
         private float _debuffRemainingTime;
         [SerializeField] private float _debuff = 0.0f;
-        [SerializeField] private float _debuffIncrease = 2.0f;
+        [SerializeField] private float _debuffIncrease = 1.0f;
         [SerializeField] private float _debuffMax = 20.0f;
         private float _debuffResetTime = 5.0f;
         private float _lastDamageTime = 0.0f;
@@ -248,8 +248,6 @@ namespace Suntail
                 Zoom();
                 #endregion
             }
-
-
         }
         #region attack
         private void Attack()
@@ -648,7 +646,7 @@ namespace Suntail
                 _lastDamageTime = Time.time;//데미지 입은 시간
 
                 float _totalDamage = damageAmount + _debuff;
-
+                Debug.Log(_totalDamage);
                 if (_defense >= _totalDamage)
                 {
                     return;
@@ -692,7 +690,7 @@ namespace Suntail
             if( _hp > 0 && _hp<_maxHP)
             {
                 _countHP += _one * Time.deltaTime;
-                if(_countHP > 9.9f) 
+                if(_countHP > 3.0f) 
                 {
                     _countHP = 0;
                     _hp += _one;
@@ -705,7 +703,7 @@ namespace Suntail
             if (_mp < _maxMP)
             {
                 _countMP += _one * Time.deltaTime;
-                if (_countMP > 0.9f)
+                if (_countMP > 0.7f)
                 {
                     _countMP = 0;
                     _mp += _one;

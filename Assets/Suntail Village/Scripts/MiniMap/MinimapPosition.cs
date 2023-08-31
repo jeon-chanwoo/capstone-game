@@ -40,9 +40,6 @@ public class MinimapPosition : MonoBehaviour
         _miniMapCamera.orthographicSize = 10.0f;
         _characterSpot.transform.position = newPosition + vec;
         _characterSpot.transform.localScale = new Vector3(4.0f,0.01f,2.5f);
-
-
-
     }
 
     private void CameraPosition()
@@ -75,8 +72,4 @@ public class MinimapPosition : MonoBehaviour
             _characterSpot.transform.localScale = newScale;
         }
     }
-
-
-    //10~75 65의 구간 50으로 나눔 1.3
-    //4~16 12의 구간 9.2로나눔 1.3
 }

@@ -195,7 +195,7 @@ public class MonsterTwo : MonoBehaviour
                 PlayerController player = target.GetComponent<PlayerController>();
                 if (player != null && !isAttacking)
                 {
-                     player.TakeDamage(2.0f);
+                     player.TakeDamage(1.0f);
                      isAttacking = true;
                      StartCoroutine(ResetAttack(1.3f));
                 }
@@ -298,7 +298,7 @@ public class MonsterTwo : MonoBehaviour
         if (currentHealth > 0 && currentHealth < maxHealth)
         {
             count += healthIncreaseRate * Time.deltaTime;
-            if (count > 1.0f)
+            if (count > 2.0f)
             {
                 count = 0;
                 currentHealth += healthIncreaseRate;

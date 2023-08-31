@@ -13,7 +13,6 @@ public class MiniGameTwo : MonoBehaviour
     private GameObject leftCube;
     private GameObject centerCube;
     private GameObject rightCube;
-    private Vector3 gameClearRotation = new Vector3(270.0f, 0f, 0f);
     private Vector3 rotationAmount = new Vector3(0f, 0f, 90.0f); // 회전량 (Y축 기준)
     private bool isRotating = false;
     private bool endGame = false;

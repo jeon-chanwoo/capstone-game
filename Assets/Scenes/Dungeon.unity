@@ -1241,6 +1241,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3863516674062800, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3863516674062800, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0
       objectReference: {fileID: 0}
@@ -1269,13 +1273,41 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1228018914}
     - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillFourHp
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillFourMp
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: gameOverText
       value: 
       objectReference: {fileID: 320239601}
     - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillOneCool
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillTwoCool
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillOnePower
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: footstepSource
       value: 
       objectReference: {fileID: 5896005530746743862}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _debuffIncrease
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _skillThreeCool
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 21854167563676725, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: blackScreenImage
       value: 
@@ -1390,7 +1422,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2302948678742342852, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 46.900032
       objectReference: {fileID: 0}
     - target: {fileID: 2349790857000391793, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1466,7 +1498,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4233545641434713001, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 46.9
       objectReference: {fileID: 0}
     - target: {fileID: 4294159619932763438, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_RootOrder
@@ -1565,6 +1597,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6732244541170986556, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+      propertyPath: _character
+      value: 
+      objectReference: {fileID: 1839583031566743607}
+    - target: {fileID: 6732244541170986556, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: rotationText
       value: Rotate
       objectReference: {fileID: 0}
@@ -1602,7 +1638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8072333713825164230, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 46.900032
       objectReference: {fileID: 0}
     - target: {fileID: 8342337967857249607, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
       propertyPath: m_Name
@@ -1684,6 +1720,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1228018913}
   m_SourcePrefab: {fileID: 100100000, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+--- !u!1 &1839583031566743607 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7304200360216826551, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}
+  m_PrefabInstance: {fileID: 1839583031566743606}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2167261345461467749 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3391750168784767703, guid: 7995f9ed8bd1e9d4990f9069b875fa84, type: 3}

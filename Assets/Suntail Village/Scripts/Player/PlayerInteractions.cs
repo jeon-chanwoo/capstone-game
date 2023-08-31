@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 //Interacting with objects and doors
@@ -77,28 +78,17 @@ namespace Suntail
         private void Update()
         {
             Interactions();
-            LegCheck();
+            //LegCheck();
         }
-
-        
 
         //Determine which object we are now looking at, depending on the tag and component
         private void Interactions()
         {
 
-            Vector3 boxCastOrigin = _character.transform.position;
-            if (Physics.BoxCast(boxCastOrigin, _character.transform.lossyScale *0.5f , _character.transform.forward, out RaycastHit interactionHit, _character.transform.rotation, interactionDistance, interactionLayer))
+            Vector3 boxCastOrigin = _character.transform.position + new Vector3(0, 1.0f, 0);
+            if (Physics.BoxCast(boxCastOrigin, _character.transform.lossyScale * 0.5f, _character.transform.forward, out RaycastHit interactionHit, _character.transform.rotation, interactionDistance, interactionLayer))
             {
-                Debug.DrawRay(_character.transform.position, _character.transform.forward * interactionHit.distance, Color.red);
-                //Gizmos.color = Color.red;
-                //Gizmos.DrawWireCube(_character.transform.position + _character.transform.forward * interactionHit.distance, _character.transform.lossyScale/2.0f);
-                if (interactionHit.collider.CompareTag(itemTag))
-                {
-                    
-                    _lookObject = interactionHit.collider.GetComponentInChildren<PhysicsObject>();
-                    ShowItemUI();
-                }
-                else if (interactionHit.collider.CompareTag(doorTag))
+                if (interactionHit.collider.CompareTag(doorTag))
                 {
                     _lookDoor = interactionHit.collider.gameObject.GetComponentInChildren<Door>();
                     ShowDoorUI();
@@ -120,7 +110,7 @@ namespace Suntail
                 {
                     _lookMiniGameTwo = interactionHit.collider.gameObject.GetComponentInChildren<MiniGameTwo>();
                     ShowMiniGameTwoUI();
-                    if( Input.GetKeyDown(interactionKey))
+                    if (Input.GetKeyDown(interactionKey))
                     {
                         _lookMiniGameTwo.PlayMiniGameTwo();
                     }
@@ -135,79 +125,7 @@ namespace Suntail
                 uiPanel.gameObject.SetActive(false);
             }
 
-            if (Input.GetKeyDown(interactionKey))
-            {
-                if (_currentlyPickedUpObject == null)
-                {
-                    if (_lookObject != null)
-                    {
-                        PickUpObject();
-                    }
-                }
-                else
-                {
-                    BreakConnection();
-                }
-            }
         }
-
-        //Disconnects from the object when the player attempts to step on the object, prevents flight on the object
-        private void LegCheck()
-        {
-            Vector3 spherePosition = _characterController.center + transform.position;
-            RaycastHit legCheck;
-            if (Physics.SphereCast(spherePosition, 0.3f, Vector3.down, out legCheck, 2.0f))
-            {
-                if (legCheck.collider.CompareTag(itemTag))
-                {
-                    //BreakConnection();
-                }
-            }
-        }
-
-        //Velocity movement toward pickup parent
-        private void FixedUpdate()
-        {
-            if (_currentlyPickedUpObject != null)
-            {
-                //이부분 수정해야함
-                _currentDistance = Vector3.Distance(pickupParent.position , _pickupRigidBody.position ) ;
-                _currentSpeed = Mathf.SmoothStep(minSpeed, maxSpeed, _currentDistance / interactionDistance);
-                _currentSpeed *= Time.fixedDeltaTime;
-                Vector3 direction = pickupParent.position - _pickupRigidBody.position + new Vector3(0,0.7f,-1.0f);
-                _pickupRigidBody.velocity =  direction.normalized * _currentSpeed;
-                
-            } 
-        }
-
-        //Picking up an looking object
-        public void PickUpObject()
-        {
-            _physicsObject = _lookObject.GetComponentInChildren<PhysicsObject>();
-            _currentlyPickedUpObject = _lookObject;
-            _lookRotation = _currentlyPickedUpObject.transform.rotation;
-            _pickupRigidBody = _currentlyPickedUpObject.GetComponent<Rigidbody>();
-            _pickupRigidBody.constraints = RigidbodyConstraints.FreezeRotation;
-            _pickupRigidBody.transform.rotation = _lookRotation;
-
-            
-            _physicsObject.playerInteraction = this;
-            StartCoroutine(_physicsObject.PickUp());
-        }
-
-        //Release the object
-        public void BreakConnection()
-        {
-            if (_currentlyPickedUpObject)
-            {
-
-                _pickupRigidBody.constraints = RigidbodyConstraints.None;
-                _currentlyPickedUpObject = null;
-                _physicsObject.pickedUp = false;
-                _currentDistance = 0;
-            }
-        }
-
         //Show interface elements when hovering over an object
         private void ShowDoorUI()
         {
@@ -240,21 +158,5 @@ namespace Suntail
                 panelText.text = rotationText;
             }
         }
-
-        private void ShowItemUI()
-        {
-            uiPanel.gameObject.SetActive(true);
-
-            if (_currentlyPickedUpObject == null)
-            {
-                panelText.text = itemPickUpText;
-            }
-            else if (_currentlyPickedUpObject != null)
-            {
-                panelText.text = itemDropText;
-            }
-
-        }
-
     }
 }

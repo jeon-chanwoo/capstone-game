@@ -1,7 +1,5 @@
 using UnityEngine;
 
-/*Script to disable lighting and shadows 
-when moving away at a set distance*/
 namespace Suntail
 {
     public class LightCulling : MonoBehaviour
@@ -19,7 +17,6 @@ namespace Suntail
 
         private void Update()
         {
-            //Calculate the distance between a given object and the light source
             float cameraDistance = Vector3.Distance(playerCamera.transform.position, gameObject.transform.position);
 
             if (cameraDistance <= shadowCullingDistance && enableShadows)
