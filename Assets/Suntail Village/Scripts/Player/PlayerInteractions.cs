@@ -84,7 +84,7 @@ namespace Suntail
         //Determine which object we are now looking at, depending on the tag and component
         private void Interactions()
         {
-
+            //레이캐스트에 맞는 객체를 가지고와서 등록된 개채면 상호작용하게 하는 함수
             Vector3 boxCastOrigin = _character.transform.position + new Vector3(0, 1.0f, 0);
             if (Physics.BoxCast(boxCastOrigin, _character.transform.lossyScale * 0.5f, _character.transform.forward, out RaycastHit interactionHit, _character.transform.rotation, interactionDistance, interactionLayer))
             {

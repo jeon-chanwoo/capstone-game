@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class UiOn : MonoBehaviour
 {
+    //현재는 쓰지않는 코드 버그를 잡기 위해 사용했지만
+    //유니티 시스템상으로 수정할수 있는 코드라 남겨둠
+    //나중에 코드리뷰할 때 사용
     public Slider slider;
     public float fadeInDuration = 2.0f; // 페이드 인 지속 시간
 

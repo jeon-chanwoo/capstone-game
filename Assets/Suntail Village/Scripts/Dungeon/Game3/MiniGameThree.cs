@@ -19,6 +19,8 @@ public class MiniGameThree : MonoBehaviour
     }
     
     private void OnTriggerEnter(Collider other)
+        //플레이어가 문제를 틀릴시 강제이동 및 최대체력감소 그에따른 현재체력 감소
+        //하한선 있음
     {
         if (other.CompareTag("Player"))
         {

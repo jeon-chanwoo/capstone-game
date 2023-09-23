@@ -27,6 +27,7 @@ namespace Suntail
             public Texture2D[] groundTextures;
             public AudioClip[] footstepSounds;
         }
+
         #region state
         [Header("Stats")]
         [SerializeField] public float _hp; //현재체력
@@ -108,21 +109,19 @@ namespace Suntail
         private float _countHP = 0.0f;
         private float _countMP = 0.0f;
         
-        [Header("Sound")]        
-        
-
-
         [Header("GameOver")]
         [SerializeField] private Image blackScreenImage;
         [SerializeField] private Text gameOverText;
 
         
         #endregion
+
         #region move
         [Header("Movement")]
-        [SerializeField] public GameObject direction;//바라보는 방향
-        [SerializeField] private float gravity = -9.81f;
-        [Header("Keybinds")]
+        [SerializeField] public GameObject direction;//바라보는 객체 : 캐릭터의 방향
+        [SerializeField] private float gravity = -9.81f; // 중력계수 설정
+
+        [Header("Keybinds")]//키 설정
         [SerializeField] private KeyCode jumpKey = KeyCode.Space;
         [SerializeField] private KeyCode runKey = KeyCode.LeftShift;
 
@@ -131,16 +130,16 @@ namespace Suntail
         [SerializeField] private AudioSource footstepSource;
 
         [Tooltip("Distance for ground texture checker")]
-        [SerializeField] private float groundCheckDistance = 1.0f;
+        [SerializeField] private float groundCheckDistance = 1.0f;//바닥의 재질 체크한다 범위는 1.0f
 
         [Tooltip("Footsteps playing rate")]
-        [SerializeField][Range(1f, 2f)] private float footstepRate = 1f;
+        [SerializeField][Range(1f, 2f)] private float footstepRate = 1f;//걷는 발소리 간격(재생속도)
 
         [Tooltip("Footstep rate when player running")]
-        [SerializeField][Range(1f, 2f)] private float runningFootstepRate = 1.5f;
+        [SerializeField][Range(1f, 2f)] private float runningFootstepRate = 1.5f;//뛰는 발소리 간격(재생속도)
 
         [Tooltip("Add textures for this layer and add sounds to be played for this texture")]
-        public List<GroundLayer> groundLayers = new List<GroundLayer>();
+        public List<GroundLayer> groundLayers = new List<GroundLayer>(); //GroundLayer추가
 
         //idle update
         public float animationSwitchTime = 15.0f;
@@ -198,8 +197,10 @@ namespace Suntail
         private int previousLayer;
         #endregion
         #endregion
+        #region 실행&실행후
         private void Awake()
         {
+            //컴포넌트 연결과, 마우스 잠금, 바닥재질 불러우기, 마우스 유무 설정
             _animator = GetComponent<Animator>();
             _characterController = GetComponent<CharacterController>();
             GetTerrainData();
@@ -207,8 +208,9 @@ namespace Suntail
             Cursor.visible = false;
         }
 
-        //Getting all terrain data for footstep system
+        
         private void GetTerrainData()
+            //유니티에서 설정한 Terrain을 가지고 온다.
         {
             if (Terrain.activeTerrain)
             {
@@ -249,13 +251,17 @@ namespace Suntail
                 #endregion
             }
         }
+        #endregion
         #region attack
         private void Attack()
         {
+            //이미 공격상태가 아니면서, 바닥이 아니면서,스킬 사용중이 아니고, 해당하는 애니메이션이 재생중이 아닐때 실행
             if (Input.GetMouseButtonDown(0) && !isAttackInputDisabled && _characterController.isGrounded && !_isAnimatingSkill && !isAnimation)
             {
                 if (attackCount == 0)
                 {
+                    //1공격은 공격이 아니거나3공격 이후에 다시 작동 할수 있다
+                    //공격이 끝나지 않은 상황에서 재생될 수 있으므로 제한사항을 둔다.
                     if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
                          _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f && !isAttackInputDisabled)
@@ -317,13 +323,13 @@ namespace Suntail
             // currentWeapon의 콜라이더가 없을 경우 처리
             if (weaponCollider == null)
             {
-                Debug.LogWarning("Weapon collider not found.");
+                //Debug.LogWarning("Weapon collider not found.");//체크용
                 return;
             }
 
             // 캐릭터 전방으로 레이캐스트 발사
             Ray ray2 = new Ray(direction.transform.position + new Vector3(0.0f, 1.0f, 0.0f), direction.transform.forward);
-            Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);
+            //Debug.DrawRay(ray2.origin, ray2.direction * currentWeapon.attackRange, Color.red);//체크용
 
             RaycastHit[] hits;
 
@@ -381,6 +387,9 @@ namespace Suntail
                         _skillOneButton.enabled = false;
                     _skillOneIsClicked = false;
 
+
+                    //스킬 쿨타임 꼬임 방지를 위해 함수 생성
+                    //람다 식을 이용하여 쿨타임을 따로 계산한다.
                     StartCoroutine(DisableSkillMove(0.9f, () =>
                     {
                         walkSpeed = 4.0f;
@@ -391,7 +400,7 @@ namespace Suntail
 
             }
 
-            if (!_skillOneIsClicked)
+            if (!_skillOneIsClicked) // 스킬쿨타임
             {
                 _skillOneLeft -= Time.deltaTime * _one;
                 _skillOneText.gameObject.SetActive(true);
@@ -405,7 +414,7 @@ namespace Suntail
                     _isSkillOneCoolDown = false;
                     _skillOneIsClicked = true;
                 }
-                else
+                else // 쿨타임 완료
                 {
                     float ratio = 1.0f - (_skillOneLeft / _skillOneCool);
                     if (ratio > 0.99f) ratio = 1.0f;
@@ -581,7 +590,7 @@ namespace Suntail
         private IEnumerator DisableSkillMove(float delay, Action onComplete)
         {
             yield return new WaitForSeconds(delay);
-            onComplete?.Invoke();
+            onComplete?.Invoke(); //완료가 될때까지 입력을 무시
         }
         private void CheckMonsterCollision(float _skillOnePower)
         {
@@ -631,6 +640,7 @@ namespace Suntail
         }
         public void TakeDamage(float damageAmount) 
         {
+            //받는 데미지 계산과 디버프 계산과 초기화
             if (_hp > 0)
             {
                 if (_debuffCount < 20)
@@ -646,7 +656,7 @@ namespace Suntail
                 _lastDamageTime = Time.time;//데미지 입은 시간
 
                 float _totalDamage = damageAmount + _debuff;
-                Debug.Log(_totalDamage);
+                //Debug.Log(_totalDamage);//디버그용
                 if (_defense >= _totalDamage)
                 {
                     return;
@@ -659,6 +669,7 @@ namespace Suntail
         }
         private void DebuffTimeCheck()
         {
+            //디버프 초기화용 타임체크
             if ((Time.time - _lastDamageTime >= _debuffResetTime) && _debuffOn)
             //현재시간-  데미지 입은시간차이가   5이상
             {
@@ -743,11 +754,11 @@ namespace Suntail
             {
                 if (_characterController.isGrounded && _velocity.y < 0)
                 {
-                    _velocity.y = -2f;
+                    _velocity.y = -2f;//캐릭터 뜨는거 방지 중력가중
                 }
 
-                _horizontalMovement = Input.GetAxis("Horizontal");
-                _verticalMovement = Input.GetAxis("Vertical");
+                _horizontalMovement = Input.GetAxis("Horizontal");//세로이동키보드(WS위아래 화살표)-1,0,1
+                _verticalMovement = Input.GetAxis("Vertical");//가로이동(AD좌우 화살표)-1,0,1
                 #region 이동방향
                 if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
                 {
@@ -797,7 +808,7 @@ namespace Suntail
                 _characterController.Move(_moveDirection * _currentSpeed * Time.deltaTime);
 
                 _velocity.y += gravity * Time.deltaTime;
-                _characterController.Move(_velocity * Time.deltaTime);
+                _characterController.Move(_velocity * Time.deltaTime);//캐릭터 수직이동 아래로 당겨주는 힘
             }
         }
         private void Jump()
@@ -809,10 +820,10 @@ namespace Suntail
                                     _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.0f) &&
                                         !_isJumping && Input.GetKeyDown(jumpKey) && _characterController.isGrounded)
             {
-                _velocity.y = Mathf.Sqrt(jumpForce * 2f * -gravity);
+                _velocity.y = Mathf.Sqrt(jumpForce * 2f * -gravity);//중력에 음수를 줘서 위치를 위쪽으로 이동
                 _animator.SetBool("jump", true);
                 
-                StartCoroutine(JumpCoolTime(0.8f));
+                StartCoroutine(JumpCoolTime(0.8f));//점프 쿨타임 적용
             }
         }
         private IEnumerator JumpCoolTime(float cool)
@@ -825,6 +836,7 @@ namespace Suntail
         }
         private void GroundChecker()
         {
+            //현재 땅을 체크해서 사운드를 내보낼때 필요한 코드 아래로 레이를 보내서 레이에 닿는 택스쳐 받아오기
             Ray checkerRay = new Ray(transform.position + (Vector3.up * 0.1f), Vector3.down);
 
             if (Physics.Raycast(checkerRay, out _groundHit, groundCheckDistance))
@@ -841,6 +853,7 @@ namespace Suntail
         }
         private void IdleUpdate()
         {
+            //입력감지해서 시간을 체크한다 체크한 시간이 지정된 시간보다 길게되면 대기모션 애니메이션을 재생한다.
             if (Input.anyKey)
             {
                 isMoving = true;
@@ -876,6 +889,8 @@ namespace Suntail
                 _animator.Play("WAIT1");
                 idleSword.SetActive(false);
                 idleshield.SetActive(false);
+
+                //람다식으로 2개의 애니메이션 출력
 
                 StartCoroutine(DisableSkillMove(5.5f, () =>
                 {
@@ -944,9 +959,10 @@ namespace Suntail
         #region camera
         private void MouseLook()
         {   
+            //마우스 이동 입력
             _xAxis = Input.GetAxis("Mouse X"); 
             _yAxis = Input.GetAxis("Mouse Y");
-
+            //ESC 화면 고정On/Off
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 escKeyPressCount++;
                 if (escKeyPressCount % 2 == 1)
@@ -964,9 +980,10 @@ namespace Suntail
             }
             else
             {
+                //마우스 감도와 방향을 입력받아 카메라의 방향을 바꾼다.
                 _verticalRotation += -_yAxis * mouseSensivity;
-                _verticalRotation = Mathf.Clamp(_verticalRotation, -mouseVerticalClamp, mouseVerticalClamp);
-                playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);
+                _verticalRotation = Mathf.Clamp(_verticalRotation, -mouseVerticalClamp, mouseVerticalClamp);//이동,최저속도와 최고속도 제한
+                playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);//인게임방향으로 전환
                 transform.rotation *= Quaternion.Euler(0, _xAxis * mouseSensivity, 0);
             }
             
@@ -977,6 +994,7 @@ namespace Suntail
         }
         private void Zoom()
         {
+            //백뷰의 카메라 거리 위치 조정
             if (!isLeftControlPressed)
             {
                 if (playerCamera.transform.localPosition.y >= 0.6f && playerCamera.transform.localPosition.y <= 8.0f)
@@ -997,8 +1015,10 @@ namespace Suntail
         }
         #endregion
         #region other
+        //캐릭터에 닿는 땅을 체크하여 맞는 사운드 출력
         private void PlayFootstep()
         {
+            //그라운드 레이어를 가지고와서 그에 맞는 레이어가 있으면 해당하는 사운드를 출력
             for (int i = 0; i < groundLayers.Count; i++)
             {
                 for (int k = 0; k < groundLayers[i].groundTextures.Length; k++)
@@ -1012,6 +1032,8 @@ namespace Suntail
         }
         private float[] GetTerrainTexturesArray(Vector3 controllerPosition)
         {
+            //terrain에 있는 데이터를 가지고오는 함수
+            //terrain위치 가지고온다.
             _terrain = Terrain.activeTerrain;
             _terrainData = _terrain.terrainData;
             Vector3 terrainPosition = _terrain.transform.position;
@@ -1021,6 +1043,7 @@ namespace Suntail
 
             float[,,] layerData = _terrainData.GetAlphamaps(positionX, positionZ, 1, 1);
 
+            //읽어와서 배열에 추가한다. 데이터를 읽어서 배열에 추가한다.
             float[] texturesArray = new float[layerData.GetUpperBound(2) + 1];
             for (int n = 0; n < texturesArray.Length; ++n)
             {
@@ -1030,13 +1053,14 @@ namespace Suntail
         }
         private int GetTerrainTexture(Vector3 controllerPosition)
         {
+            //컨트롤러 위치에서의 택스쳐 배열을 가지고옴
             float[] array = GetTerrainTexturesArray(controllerPosition);
             float maxArray = 0;
             int maxArrayIndex = 0;
 
             for (int n = 0; n < array.Length; ++n)
             {
-
+                //가장큰 배열을 가진 택스쳐를 가지고 온다.
                 if (array[n] > maxArray)
                 {
                     maxArrayIndex = n;
@@ -1047,12 +1071,14 @@ namespace Suntail
         }
         private Texture2D GetRendererTexture()
         {
+            //현재 충돌한 택스쳐를 가지고 오는 함수
             Texture2D texture;
             texture = (Texture2D)_groundHit.collider.gameObject.GetComponent<Renderer>().material.mainTexture;
             return texture;
         }
         private AudioClip RandomClip(AudioClip[] clips)
         {
+            //오디오 사운드를 재생시켜주는 함수 
             int attempts = 2;
             footstepSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
 

@@ -211,10 +211,10 @@ public class MonsterTwo : MonoBehaviour
         }
     }
     private void InstantDeathAttack()
+        //2보스만의 특수기믹 체력이 일정수치가 되면 특수기믹 발동 한번 발동한 기믹은 다시는 발동하지 않는다.
     {
         Transform DeathAttackText = Camera.main.transform.Find("UI/DeathAttack");
         Text _text = DeathAttackText.GetComponent<Text>();
-        //ParticleSystem.MainModule mainModule = _meteor.main;
         if (currentHealth<=260.0f && !firstDeathAttack)
         {
             isDeathAttack = true;

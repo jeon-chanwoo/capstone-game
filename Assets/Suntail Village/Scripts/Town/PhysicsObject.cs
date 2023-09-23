@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Suntail
 {
+    //현재는 쓰지않는 코드 마을안에서 물체를 들고 내릴수 있는 코드인데
+    //사용하지 않음
+    //나중에 물체를 이용한 기믹을 사용할때 사용할 예정
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(AudioSource))]
     public class PhysicsObject : MonoBehaviour

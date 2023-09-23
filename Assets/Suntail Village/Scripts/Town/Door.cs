@@ -7,6 +7,7 @@ namespace Suntail
     [RequireComponent(typeof(AudioSource))]
     public class Door : MonoBehaviour
     {
+        //문열릴때와 닿힐때 사운드
         [Tooltip("Door opening sound")]
         [SerializeField] private AudioClip openSound;
 
@@ -54,6 +55,7 @@ namespace Suntail
         }
         private IEnumerator PauseInteraction()
         {
+            //작동 간격
             _pauseInteraction = true;
             yield return new WaitForSeconds(_doorOpenTime);
             _pauseInteraction = false;

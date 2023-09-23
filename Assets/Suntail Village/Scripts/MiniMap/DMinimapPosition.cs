@@ -23,7 +23,6 @@ public class DMinimapPosition : MonoBehaviour
     void Start()
     {
         StartCameraPosition();
-
     }
 
     void Update()
@@ -31,7 +30,6 @@ public class DMinimapPosition : MonoBehaviour
         CheckInput();
         CameraPosition();
         SizeADJ();
-        
     }
     private void StartCameraPosition()
     {
@@ -40,9 +38,6 @@ public class DMinimapPosition : MonoBehaviour
         _miniMapCamera.orthographicSize = 10.0f;
         _characterSpot.transform.position = newPosition + vec;
         _characterSpot.transform.localScale = new Vector3(4.0f,0.01f,2.5f);
-
-
-
     }
 
     private void CameraPosition()

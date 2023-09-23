@@ -56,6 +56,8 @@ public class MonsterThree : MonoBehaviour
         }
     }
     public void DamageOverTime()
+        //시간이 지남에 따라 플레이어에게 데미지를 준다. 
+        //직접 피해를 주는것이 아니라 디버프 적용이 되지 않는다.
     {
         if (currentHealth > 0)
         {
@@ -78,7 +80,7 @@ public class MonsterThree : MonoBehaviour
         StartCoroutine(DestroyAfterDelay(1.0f));
         backGroundMusicScript.StopBossMusic();
         audioSource.Stop();
-        playerController._maxHP = 100.0f;
+        playerController._maxHP = 100.0f;//플레이어가 클리어 했을 시 최대 체력을 100으로 만들어 준다.
     }
     private IEnumerator DestroyAfterDelay(float delay)
     {

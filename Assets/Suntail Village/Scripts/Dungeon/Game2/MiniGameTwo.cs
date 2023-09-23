@@ -32,9 +32,11 @@ public class MiniGameTwo : MonoBehaviour
     }
     public void GameClear()
     {
-          if ((Mathf.Floor(leftCube.transform.rotation.eulerAngles.y) == 0) &&
-             (Mathf.Floor(rightCube.transform.rotation.eulerAngles.y) == 0) &&
-            (Mathf.Floor(centerCube.transform.rotation.eulerAngles.y) == 0) && !endGame)
+        //유니티에서 회전을 할시 맵에있는 굴곡에 영향을 받기 때문에 정확히 0이 나올수 없어서(ex)0.02)
+        //보정해 주기위한 함수(내림 함수) 모든 석상이 0일때 클리어
+        if ((Mathf.Floor(leftCube.transform.rotation.eulerAngles.y) == 0) &&
+           (Mathf.Floor(rightCube.transform.rotation.eulerAngles.y) == 0) &&
+          (Mathf.Floor(centerCube.transform.rotation.eulerAngles.y) == 0) && !endGame)
         {
 
             gameClear = true;
@@ -45,7 +47,7 @@ public class MiniGameTwo : MonoBehaviour
             _text.CrossFadeAlpha(0, 5f, false);
 
             BoxCollider boxCollider = _wall.GetComponent<BoxCollider>();
-            if(boxCollider != null)
+            if (boxCollider != null)
             {
                 boxCollider.enabled = false;
             }
@@ -53,14 +55,16 @@ public class MiniGameTwo : MonoBehaviour
     }
     public void PlayMiniGameTwo()
     {
+        //플레이어가 상호작용 할 시 왼쪽(왼쪽+중앙)/중앙(왼쪽+중앙+오른쪽)/오른쪽(중앙+오른쪽)이 회전하게 한다.
         if (!gameClear && !isRotating)
         {
             isRotating = true;
 
             if (_rotationAudioSource != null && rotationSound != null)
             {
-                _rotationAudioSource.PlayOneShot(rotationSound);
+                _rotationAudioSource.PlayOneShot(rotationSound); //공통사운드
             }
+
             if (gameObject.name == "LeftCube")
             {
                 StartCoroutine(RotateCubes(leftCube, centerCube));
@@ -76,15 +80,15 @@ public class MiniGameTwo : MonoBehaviour
         }
     }
 
-    private IEnumerator RotateCubes(params GameObject[] cubes)
+    private IEnumerator RotateCubes(params GameObject[] cubes)//큐브를 배열에 넣는다.
     {
-        Quaternion[] startRotations = new Quaternion[cubes.Length];
-        Quaternion[] endRotations = new Quaternion[cubes.Length];
+        Quaternion[] startRotations = new Quaternion[cubes.Length];// 그 큐브의 회전 전 각도
+        Quaternion[] endRotations = new Quaternion[cubes.Length];//그 큐브의 회전 후 각도
 
         for (int i = 0; i < cubes.Length; i++)
         {
             startRotations[i] = cubes[i].transform.rotation;
-            endRotations[i] = cubes[i].transform.rotation * Quaternion.Euler(rotationAmount);
+            endRotations[i] = cubes[i].transform.rotation * Quaternion.Euler(rotationAmount);//회전
         }
 
         float elapsedTime = 0f;
@@ -94,10 +98,10 @@ public class MiniGameTwo : MonoBehaviour
         {
             for (int i = 0; i < cubes.Length; i++)
             {
-                cubes[i].transform.rotation = Quaternion.Slerp(startRotations[i], endRotations[i], elapsedTime / rotationTime);
+                cubes[i].transform.rotation = Quaternion.Slerp(startRotations[i], endRotations[i], elapsedTime / rotationTime);//Slerp를 통해 부드럽게 회전
             }
 
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.deltaTime;//게임내에서 흐르는 시간을 받아온다.
             yield return null;
         }
 
@@ -107,6 +111,6 @@ public class MiniGameTwo : MonoBehaviour
         }
 
         isRotating = false;
-        
+
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 
-//This script is only used to start the Suntail demo scene
+
 namespace Suntail
 {
     public class SuntailStartDemo : MonoBehaviour
@@ -55,7 +55,7 @@ namespace Suntail
             //Hint text timer
             if (hintTimerIsActive)//17-7=10초동안 보임
             {
-                hintDuration -= Time.deltaTime;//
+                hintDuration -= Time.deltaTime;
                 if(hintDuration < 9.0f && isHintText1)
                 {
                     isHintText1= false;
@@ -80,20 +80,20 @@ namespace Suntail
             yield return new WaitForSeconds(wait+4.0f);
             text.CrossFadeAlpha(0, duration, false);
         }
-        //Sound fading
+        
         public static IEnumerator StartAudioFade(AudioMixer audioMixer, string exposedParam, float duration, float targetVolume)
         {
             float currentTime = 0;
             float currentVol;
-            audioMixer.GetFloat(exposedParam, out currentVol);
-            currentVol = Mathf.Pow(10, currentVol / 20);
-            float targetValue = Mathf.Clamp(targetVolume, 0.0001f, 1);
+            audioMixer.GetFloat(exposedParam, out currentVol);//exposeParam을 currentVol에 대입
+            currentVol = Mathf.Pow(10, currentVol / 20);//거듭제곱
+            float targetValue = Mathf.Clamp(targetVolume, 0.0001f, 1);//최대값 최소값 설정
 
             while (currentTime < duration)
             {
                 currentTime += Time.deltaTime;
-                float newVol = Mathf.Lerp(currentVol, targetValue, currentTime / duration);
-                audioMixer.SetFloat(exposedParam, Mathf.Log10(newVol) * 20);
+                float newVol = Mathf.Lerp(currentVol, targetValue, currentTime / duration);//지정된 음량으로 서서히 조절
+                audioMixer.SetFloat(exposedParam, Mathf.Log10(newVol) * 20);//음량조절
                 yield return null;
             }
             yield break;

@@ -18,12 +18,11 @@ public class MinimapPosition : MonoBehaviour
     private float xMaxScale = 25.6f;
 
     private bool isLeftControlPressed = false;
-    private Vector3 vec = new Vector3(0.0f, -5.0f, 0.0f);
+    private Vector3 vec = new Vector3(0.0f, -5.0f, 0.0f); // 위치조정
 
     void Start()
     {
         StartCameraPosition();
-
     }
 
     void Update()
@@ -35,6 +34,7 @@ public class MinimapPosition : MonoBehaviour
     }
     private void StartCameraPosition()
     {
+        //시작하면 위치를 한번 설정해준다.
         Vector3 newPosition = new Vector3(_character.transform.position.x, _character.transform.position.y + 40.0f, _character.transform.position.z);
         transform.position = newPosition;
         _miniMapCamera.orthographicSize = 10.0f;
@@ -44,6 +44,7 @@ public class MinimapPosition : MonoBehaviour
 
     private void CameraPosition()
     {
+        //시작이후 캐릭터의 움직임에 따라 위치가 바뀐다.
         Vector3 newPosition = new Vector3(_character.transform.position.x, transform.position.y, _character.transform.position.z);
         transform.position = newPosition;
         _characterSpot.transform.position = newPosition + vec;
@@ -56,6 +57,7 @@ public class MinimapPosition : MonoBehaviour
     }
     private void SizeADJ()
     {
+        //사이즈 조절 왼쪽 컨트롤키를 누르면서 휠을 할때 사이즈 조절
         if (isLeftControlPressed)
         {
             float mouseWheel = Input.GetAxis("Mouse ScrollWheel");

@@ -14,7 +14,7 @@ public class StageStart : MonoBehaviour
     public int stageCount=0;
     public BackGroundMusic backGroundMusicScript;// 백그라운드 뮤직 스크립트
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)//플레이어가 트리거에 서 나갈때 실행
     {
         
         if (other.CompareTag("Player"))
@@ -31,11 +31,11 @@ public class StageStart : MonoBehaviour
             #region 1stage
             if (stageCount == 1)
             {
-                if (game1Prefab != null)
+                if (game1Prefab != null)//Game1
                 {
                     Instantiate(game1Prefab, new Vector3(9.7f, -59.1f, -4.1f), Quaternion.identity);
                 }
-                else if (monster1Prefab != null)
+                else if (monster1Prefab != null)//Monster1
                 {
                     Instantiate(monster1Prefab, new Vector3(2.1f, 0.1f, 0f), Quaternion.identity);
                     backGroundMusicScript.PlayBossMusic();//보스 음악 재생
@@ -44,13 +44,13 @@ public class StageStart : MonoBehaviour
             }
             #endregion
             #region 2stage
-            if (stageCount == 2)
+            if (stageCount == 2)//Stage2
             {
-                if (game2Prefab != null)
+                if (game2Prefab != null)//Game2
                 {
                     Instantiate(game2Prefab, new Vector3(2.45f,-4.79f,52.41f), Quaternion.Euler(0f, 180f, 180f));
                 }
-                else if (monster2Prefab != null)
+                else if (monster2Prefab != null)//onster2
                 {
                     Instantiate(monster2Prefab, new Vector3(2.44f, 0.09f, -0.41f), Quaternion.identity);
                     backGroundMusicScript.PlayBossMusic();//보스 음악 재생
@@ -58,13 +58,13 @@ public class StageStart : MonoBehaviour
             }
             #endregion
             #region 3stage
-            if(stageCount == 3)
+            if(stageCount == 3)//Stage3
             {
-                if(game3Prefab != null)
+                if(game3Prefab != null)//Game3
                 {
                     Instantiate(game3Prefab, new Vector3(3.77f, -4.89f, 55.76f), Quaternion.Euler(90.0f,0,0));
                 }
-                else if( monster3Prefab != null)
+                else if( monster3Prefab != null)//Monster3
                 {
                     Instantiate(monster3Prefab, new Vector3(2.78f, 0.23f, 0.0f), Quaternion.Euler(-90.0f, 0, 0));
                     backGroundMusicScript.PlayBossMusic();//보스 음악 재생

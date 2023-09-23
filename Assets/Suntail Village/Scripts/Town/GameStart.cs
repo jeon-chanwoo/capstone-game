@@ -13,6 +13,7 @@ public class GameStart : MonoBehaviour
 
     private void Start()
     {
+        //게임오버 되었을때 마우스 락과 안보임 버그 해결하기 위해 작성
         Cursor.lockState = CursorLockMode.None;// 마우스 커서 풀림
         Cursor.visible = true;//마우스 커서 보이게
     }
@@ -28,6 +29,7 @@ public class GameStart : MonoBehaviour
         }
         else if (EventSystem.current.currentSelectedGameObject == _gameExit)
         {
+            //유니티에서와 실제게임어플에서의 종료는 다르다...
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else

@@ -4,6 +4,8 @@ namespace Suntail
 {
     public class LightCulling : MonoBehaviour
     {
+        //빛과 관련된 함수 빛이 조사하는것을 카메라가 담을때 어떻게 받을것인지 
+        //그림자는 어떻게 받을 것인지 경정하는 함수
         [SerializeField] private GameObject playerCamera;
         [SerializeField] private float shadowCullingDistance = 15f;
         [SerializeField] private float lightCullingDistance = 30f;

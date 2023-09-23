@@ -8,6 +8,7 @@ namespace Suntail
     [RequireComponent(typeof(AudioSource))]
     public class CastleDoor : MonoBehaviour
     {
+        //성문 열때 소리 설정하는 코드
         [Tooltip("Door opening sound")]
         [SerializeField] private AudioClip castleDooropenSound;
 

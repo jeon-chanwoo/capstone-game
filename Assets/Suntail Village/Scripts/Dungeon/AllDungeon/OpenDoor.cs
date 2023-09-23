@@ -25,19 +25,20 @@ public class OpenDoor : MonoBehaviour
         backGroundMusic = FindObjectOfType<BackGroundMusic>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerController = player.GetComponent<CharacterController>();
-        stageStartPosition = new Vector3(2.5f, -8.5f, 85.0f);
+        stageStartPosition = new Vector3(2.5f, -8.5f, 85.0f);//플레이어 캐릭터 옮길 위치
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)//플레이어가 콜리더에 닿았을 때
     {
         if (other.CompareTag("Player"))
         {
-            stageCount++;
+            stageCount++;//스테이지 카운터
             blackScreenImage.CrossFadeAlpha(1, 0, false);//다시보이게
             blackScreenText.gameObject.SetActive(true);//올라가는중
             backGroundMusic.StartEnterMusic();
             StartCoroutine(TransitionAnimation());
-            ForceMove();
+            ForceMove();//강제이동
+            //모든문 오픈
             if (otherObjectAnimator1 != null && otherObjectAnimator2 != null && otherObjectAnimator3 != null)
             {
                 otherObjectAnimator1.SetTrigger("open");
@@ -47,6 +48,7 @@ public class OpenDoor : MonoBehaviour
 
 
             #region stage
+            //스테이지에 맞게 미니게임 제거
             if (stageCount == 1)
             {
                 game = GameObject.Find("MiniGame(Clone)");
@@ -73,6 +75,8 @@ public class OpenDoor : MonoBehaviour
         blackScreenText.CrossFadeAlpha(0, TextDuration, false);
     }
     private void ForceMove()
+        //플레이어의 컨트롤러를 껐다키는 사이에 강제이동
+        //컨트롤러가 켜져있을때는 강제이동이 안된다.
     {
         playerController.enabled = false;
         player.transform.position = stageStartPosition;
