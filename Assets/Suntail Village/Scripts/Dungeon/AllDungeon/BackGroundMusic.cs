@@ -9,7 +9,7 @@ public class BackGroundMusic : MonoBehaviour
     public AudioClip enterSound;//입장시 효과음
     public AudioSource enterSoundSource;//효과음의 사운드 소스
     public AudioClip backGroundMusic;//기본 배경음악
-    public AudioSource backGroundMusicSource;//기본배경음악 소스
+    public AudioSource backGroundMusicSource;//기본 배경음악 소스
     public AudioClip bossMusic;//보스와의 전투 개시시 재생될 음악
 
     private bool hasEntered = false; //보스 문에 입장했는지 확인
@@ -21,7 +21,7 @@ public class BackGroundMusic : MonoBehaviour
         enterSoundSource = gameObject.AddComponent<AudioSource>();
         enterSoundSource.clip = enterSound;
         enterSoundSource.loop = false;
-        enterSoundSource.playOnAwake = false;//씬이 실행되자마자 실행할건지유무
+        enterSoundSource.playOnAwake = false;//씬이 실행 되자마자 실행할 건지 유무
 
         backGroundMusicSource = gameObject.AddComponent<AudioSource>();
         backGroundMusicSource.clip =  backGroundMusic;
@@ -41,7 +41,7 @@ public class BackGroundMusic : MonoBehaviour
         }
     }
 
-    void PlayBackGroundMusic()//던전기본배경음악
+    void PlayBackGroundMusic()//던전 기본 배경음악
     {
         if(!isBossMusicPlaying)
         {
@@ -56,7 +56,7 @@ public class BackGroundMusic : MonoBehaviour
         backGroundMusicSource.clip = bossMusic; // 보스 음악으로 클립 변경
         backGroundMusicSource.Play();
     }
-    public void StopBossMusic()//보스처치후 원래의 배경음악
+    public void StopBossMusic()//보스처치 후 원래의 배경음악
     {
         isBossMusicPlaying = false;
         backGroundMusicSource.Stop(); // 보스 음악 정지

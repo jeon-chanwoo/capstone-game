@@ -260,7 +260,7 @@ namespace Suntail
             {
                 if (attackCount == 0)
                 {
-                    //1공격은 공격이 아니거나3공격 이후에 다시 작동 할수 있다
+                    //첫번째 공격은 공격상태가 아니거나, 세번째 공격 이후에 다시 작동할 수 있다
                     //공격이 끝나지 않은 상황에서 재생될 수 있으므로 제한사항을 둔다.
                     if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3") &&
                         _animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1.0f &&
@@ -757,8 +757,8 @@ namespace Suntail
                     _velocity.y = -2f;//캐릭터 뜨는거 방지 중력가중
                 }
 
-                _horizontalMovement = Input.GetAxis("Horizontal");//세로이동키보드(WS위아래 화살표)-1,0,1
-                _verticalMovement = Input.GetAxis("Vertical");//가로이동(AD좌우 화살표)-1,0,1
+                _horizontalMovement = Input.GetAxis("Horizontal");//세로 이동 키보드(WS위아래 화살표)-1,0,1
+                _verticalMovement = Input.GetAxis("Vertical");//가로 이동(AD좌우 화살표)-1,0,1
                 #region 이동방향
                 if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
                 {
@@ -853,7 +853,7 @@ namespace Suntail
         }
         private void IdleUpdate()
         {
-            //입력감지해서 시간을 체크한다 체크한 시간이 지정된 시간보다 길게되면 대기모션 애니메이션을 재생한다.
+            //입력을 감지해서 시간을 체크한다 체크한 시간이 지정된 시간보다 길게되면 대기모션 애니메이션을 재생한다.
             if (Input.anyKey)
             {
                 isMoving = true;
@@ -866,7 +866,7 @@ namespace Suntail
 
             if (isMoving)
             {
-                lastInputTime = Time.time;//키입력이 뭐라도 있으면 시간 갱신
+                lastInputTime = Time.time;//키 입력이 뭐라도 있으면 시간 갱신
             }
 
             if(Time.time - lastAnimationSwitchTime > animationSwitchTime)//마지막 입력시간과의 차이가 3초이상 나게되면
@@ -983,7 +983,7 @@ namespace Suntail
                 //마우스 감도와 방향을 입력받아 카메라의 방향을 바꾼다.
                 _verticalRotation += -_yAxis * mouseSensivity;
                 _verticalRotation = Mathf.Clamp(_verticalRotation, -mouseVerticalClamp, mouseVerticalClamp);//이동,최저속도와 최고속도 제한
-                playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);//인게임방향으로 전환
+                playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);//인게임 방향으로 전환
                 transform.rotation *= Quaternion.Euler(0, _xAxis * mouseSensivity, 0);
             }
             

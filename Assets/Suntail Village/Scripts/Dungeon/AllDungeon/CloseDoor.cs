@@ -50,7 +50,7 @@ public class StageStart : MonoBehaviour
                 {
                     Instantiate(game2Prefab, new Vector3(2.45f,-4.79f,52.41f), Quaternion.Euler(0f, 180f, 180f));
                 }
-                else if (monster2Prefab != null)//onster2
+                else if (monster2Prefab != null)//Monster2
                 {
                     Instantiate(monster2Prefab, new Vector3(2.44f, 0.09f, -0.41f), Quaternion.identity);
                     backGroundMusicScript.PlayBossMusic();//보스 음악 재생

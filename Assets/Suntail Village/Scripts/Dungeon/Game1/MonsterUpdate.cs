@@ -24,7 +24,7 @@ namespace Suntail
         }
 
         private void UpdateUI()
-            //가지고온 컴포넌트에서 최대체력, 현재체력을 가지고 와서 슬라이더에 쏴준다.
+            //가지고 온 컴포넌트에서 최대 체력, 현재 체력을 가지고 와서 슬라이더에 쏴준다.
         {
             _hpSlider1.maxValue = monster.maxHealth;
             _hpSlider1.value = monster.currentHealth;

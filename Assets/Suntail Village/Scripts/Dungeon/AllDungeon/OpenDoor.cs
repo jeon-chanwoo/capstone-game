@@ -33,12 +33,12 @@ public class OpenDoor : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             stageCount++;//스테이지 카운터
-            blackScreenImage.CrossFadeAlpha(1, 0, false);//다시보이게
-            blackScreenText.gameObject.SetActive(true);//올라가는중
+            blackScreenImage.CrossFadeAlpha(1, 0, false);//다시 보이게
+            blackScreenText.gameObject.SetActive(true);//올라가는 중
             backGroundMusic.StartEnterMusic();
             StartCoroutine(TransitionAnimation());
-            ForceMove();//강제이동
-            //모든문 오픈
+            ForceMove();//강제 이동
+            //모든 문 오픈
             if (otherObjectAnimator1 != null && otherObjectAnimator2 != null && otherObjectAnimator3 != null)
             {
                 otherObjectAnimator1.SetTrigger("open");
